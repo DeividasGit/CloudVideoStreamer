@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34601.278
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudVideoStreamer.Api", "CloudVideoStreamer.Api\CloudVideoStreamer.Api.csproj", "{557B6574-0B81-415E-9C03-8F6FFD67F343}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{557B6574-0B81-415E-9C03-8F6FFD67F343}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{557B6574-0B81-415E-9C03-8F6FFD67F343}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{557B6574-0B81-415E-9C03-8F6FFD67F343}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{557B6574-0B81-415E-9C03-8F6FFD67F343}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9CCF537C-C0C6-4FF8-808D-49AF9CB8B757}
+	EndGlobalSection
+EndGlobal
