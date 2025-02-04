@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
+    <ProjectReference Include="..\CloudVideoStreamer.Service\CloudVideoStreamer.Service.csproj" />
   </ItemGroup>
 
 </Project>
