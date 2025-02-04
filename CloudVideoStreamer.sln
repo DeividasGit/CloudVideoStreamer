@@ -5,6 +5,10 @@ VisualStudioVersion = 17.8.34601.278
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudVideoStreamer.Api", "CloudVideoStreamer.Api\CloudVideoStreamer.Api.csproj", "{557B6574-0B81-415E-9C03-8F6FFD67F343}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudVideoStreamer.Repository", "CloudVideoStreamer.Repository\CloudVideoStreamer.Repository.csproj", "{6028CC8D-2B4C-4A1F-B5B6-746FE7F337DA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudVideoStreamer.Service", "CloudVideoStreamer.Service\CloudVideoStreamer.Service.csproj", "{3269C00B-B0BD-4C99-AA35-8C50013BC20B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{557B6574-0B81-415E-9C03-8F6FFD67F343}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{557B6574-0B81-415E-9C03-8F6FFD67F343}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{557B6574-0B81-415E-9C03-8F6FFD67F343}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6028CC8D-2B4C-4A1F-B5B6-746FE7F337DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6028CC8D-2B4C-4A1F-B5B6-746FE7F337DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6028CC8D-2B4C-4A1F-B5B6-746FE7F337DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6028CC8D-2B4C-4A1F-B5B6-746FE7F337DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3269C00B-B0BD-4C99-AA35-8C50013BC20B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3269C00B-B0BD-4C99-AA35-8C50013BC20B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3269C00B-B0BD-4C99-AA35-8C50013BC20B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3269C00B-B0BD-4C99-AA35-8C50013BC20B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
