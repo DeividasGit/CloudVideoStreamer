@@ -12,6 +12,7 @@ public class BaseController<T, TK> : Controller
     _service = service;
   }
 
+  [HttpGet]
   public virtual IQueryable<T> Get()
   {
     return _service.GetAll();
