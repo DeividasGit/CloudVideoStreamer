@@ -10,6 +10,10 @@ namespace CloudVideoStreamer.Repository;
 
 public class AppDbContext : DbContext
 {
+  public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+  {
+  }
+
   public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new())
   {
     return base.SaveChangesAsync(cancellationToken);
