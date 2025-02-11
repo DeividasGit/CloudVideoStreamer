@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CloudVideoStreamer.Repository.Configurations;
 using Microsoft.EntityFrameworkCore;
 
 namespace CloudVideoStreamer.Repository;
@@ -16,6 +17,8 @@ public class AppDbContext : DbContext
 
   protected override void OnModelCreating(ModelBuilder modelBuilder)
   {
+    modelBuilder.ApplyConfiguration(new UserConfiguration());
+
     base.OnModelCreating(modelBuilder);
   }
 }
