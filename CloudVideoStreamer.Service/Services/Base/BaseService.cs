@@ -7,6 +7,7 @@ using CloudVideoStreamer.Repository.Interfaces;
 using CloudVideoStreamer.Repository.Models.Base;
 using CloudVideoStreamer.Service.Interfaces.Base;
 using CloudVideoStreamer.Repository.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace CloudVideoStreamer.Service.Services.Base;
 

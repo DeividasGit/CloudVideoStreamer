@@ -1,4 +1,8 @@
 using CloudVideoStreamer.Repository;
+using CloudVideoStreamer.Repository.Interfaces;
+using CloudVideoStreamer.Repository.Repositories;
+using CloudVideoStreamer.Service.Interfaces;
+using CloudVideoStreamer.Service.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +16,10 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
   options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+builder.Services.AddScoped<IMovieService, MovieService>();
 
 var app = builder.Build();
 

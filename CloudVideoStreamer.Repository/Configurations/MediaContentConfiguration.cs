@@ -13,6 +13,6 @@ public class MediaContentConfiguration : IEntityTypeConfiguration<MediaContent>
     builder.Property(x => x.Title).IsRequired().HasMaxLength(100);
     builder.Property(x => x.Description).IsRequired().HasMaxLength(1000);
     builder.Property(x => x.ReleaseDate).IsRequired();
-    builder.Property(x => x.Rating).IsRequired(false);
+    builder.Property(x => x.Rating).IsRequired();
   }
 }
