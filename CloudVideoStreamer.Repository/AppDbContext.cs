@@ -22,6 +22,9 @@ public class AppDbContext : DbContext
   protected override void OnModelCreating(ModelBuilder modelBuilder)
   {
     modelBuilder.ApplyConfiguration(new UserConfiguration());
+    modelBuilder.ApplyConfiguration(new MediaContentConfiguration());
+    modelBuilder.ApplyConfiguration(new MovieConfiguration());
+    modelBuilder.ApplyConfiguration(new TvSeriesConfiguration());
 
     base.OnModelCreating(modelBuilder);
   }
