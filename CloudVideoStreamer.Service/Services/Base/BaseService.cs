@@ -20,8 +20,8 @@ public class BaseService<T, TK> : IBaseService<T, TK> where T : class, IBaseEnti
     _unitOfWork = unitOfWork;
   }
 
-  public IQueryable<T> GetAll()
+  public virtual async Task<List<T>> GetAll()
   {
-    return _unitOfWork.Repository<T, TK>().GetAll();
+    return await _unitOfWork.Repository<T, TK>().GetAll().ToListAsync();
   }
 }

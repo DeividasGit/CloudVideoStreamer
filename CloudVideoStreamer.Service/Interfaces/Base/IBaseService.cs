@@ -8,5 +8,5 @@ namespace CloudVideoStreamer.Service.Interfaces.Base;
 
 public interface IBaseService<T, TK>
 {
-  IQueryable<T> GetAll();
+  Task<List<T>> GetAll();
 }
