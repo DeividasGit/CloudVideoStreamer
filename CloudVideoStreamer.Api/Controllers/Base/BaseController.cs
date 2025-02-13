@@ -13,8 +13,12 @@ public class BaseController<T, TK> : Controller
   }
 
   [HttpGet]
-  public virtual IQueryable<T> Get()
+  public virtual async Task<ActionResult<List<T>>> Get()
   {
-    return _service.GetAll();
+    var result = await _service.GetAll();
+
+    if (result == null) return NotFound();
+
+    return Ok(result);
   }
 }
