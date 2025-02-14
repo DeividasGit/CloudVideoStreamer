@@ -2,12 +2,14 @@
 using CloudVideoStreamer.Repository.DTOs;
 using CloudVideoStreamer.Repository.Models;
 using CloudVideoStreamer.Service.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CloudVideoStreamer.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class MovieController : BaseController<Movie, int>
 {
   private IMovieService _movieService;
