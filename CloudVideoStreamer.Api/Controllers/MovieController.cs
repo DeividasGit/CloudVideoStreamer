@@ -9,7 +9,7 @@ namespace CloudVideoStreamer.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-//[Authorize]
+[Authorize]
 public class MovieController : BaseController<Movie, int>
 {
   private IMovieService _movieService;
