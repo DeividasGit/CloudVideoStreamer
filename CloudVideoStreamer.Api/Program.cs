@@ -14,8 +14,12 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<AppDbContext>(options =>
-  options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Configuration.AddEnvironmentVariables();
+
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var environmentConnectionString = Environment.GetEnvironmentVariable(connectionString) ?? connectionString;
+
+builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(environmentConnectionString));
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
