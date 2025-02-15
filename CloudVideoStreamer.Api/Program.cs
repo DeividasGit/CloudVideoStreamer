@@ -3,7 +3,10 @@ using CloudVideoStreamer.Repository.Interfaces;
 using CloudVideoStreamer.Repository.Repositories;
 using CloudVideoStreamer.Service.Interfaces;
 using CloudVideoStreamer.Service.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,8 +17,12 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<AppDbContext>(options =>
-  options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Configuration.AddEnvironmentVariables();
+
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var environmentConnectionString = Environment.GetEnvironmentVariable(connectionString) ?? connectionString;
+
+builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(environmentConnectionString));
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
@@ -26,6 +33,25 @@ builder.Services.AddCors(options =>
     policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()
   )
 );
+
+var jwtSecret = builder.Configuration.GetValue<string>("InternalAuthKey");
+var environmentJwtSecret = Environment.GetEnvironmentVariable(jwtSecret) ?? jwtSecret;
+
+builder.Services.AddAuthentication(options =>
+{
+  options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+  options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+  options.SaveToken = true;
+  options.TokenValidationParameters = new TokenValidationParameters()
+  {
+    ValidateIssuerSigningKey = true,
+    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(environmentJwtSecret)),
+    ValidateIssuer = false,
+    ValidateAudience = false
+  };
+});
 
 var app = builder.Build();
 
