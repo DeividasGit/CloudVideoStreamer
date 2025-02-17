@@ -22,4 +22,29 @@ public class BaseRepository<T, TK> : IBaseRepository<T, TK> where T : class, IBa
   {
     return _context.Set<T>().AsNoTracking().OrderByDescending(x => x.Id);
   }
+
+  public IQueryable<T> Get(TK id)
+  {
+    return _context.Set<T>().AsNoTracking().Where(x => x.Id.Equals(id));
+  }
+
+  public void Update(T entity)
+  {
+    _context.Set<T>().Update(entity);
+  }
+
+  public void Update(IQueryable<T> entities)
+  {
+    _context.Set<T>().UpdateRange(entities);
+  }
+
+  public void Delete(T entity)
+  {
+    _context.Set<T>().Remove(entity);
+  }
+
+  public void Delete(IQueryable<T> entities)
+  {
+    _context.Set<T>().RemoveRange(entities);
+  }
 }

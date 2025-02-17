@@ -21,4 +21,30 @@ public class BaseController<T, TK> : Controller
 
     return Ok(result);
   }
+
+  [HttpGet]
+  public virtual async Task<ActionResult<List<T>>> Get(TK id)
+  {
+    var result = _service.Get(id);
+
+    if (result == null) return NotFound();
+
+    return Ok(result);
+  }
+
+  [HttpPut]
+  public virtual async Task<ActionResult> Put(T model)
+  {
+    await _service.Update(model);
+
+    return Ok();
+  }
+
+  [HttpDelete]
+  public virtual async Task<ActionResult> Delete(TK id)
+  {
+    await _service.Delete(id);
+
+    return Ok();
+  }
 }

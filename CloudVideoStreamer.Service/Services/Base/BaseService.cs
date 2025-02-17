@@ -24,4 +24,25 @@ public class BaseService<T, TK> : IBaseService<T, TK> where T : class, IBaseEnti
   {
     return await _unitOfWork.Repository<T, TK>().GetAll().ToListAsync();
   }
+
+  public virtual async Task<T> Get(TK id)
+  {
+    return await _unitOfWork.Repository<T, TK>().Get(id).SingleAsync();
+  }
+
+  public virtual async Task Update(T model)
+  {
+    _unitOfWork.Repository<T, TK>().Delete(model);
+
+    await _unitOfWork.SaveChangesAsync();
+  }
+
+  public virtual async Task Delete(TK id)
+  {
+    var entity = await _unitOfWork.Repository<T, TK>().Get(id).SingleAsync();
+
+    _unitOfWork.Repository<T, TK>().Update(entity);
+
+    await _unitOfWork.SaveChangesAsync();
+  }
 }
