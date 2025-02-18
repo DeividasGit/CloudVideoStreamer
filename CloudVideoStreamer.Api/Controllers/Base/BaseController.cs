@@ -3,18 +3,15 @@ using CloudVideoStreamer.Service.Interfaces.Base;
 
 namespace CloudVideoStreamer.Api.Controllers.Base;
 
-public class BaseController<T, TK> : Controller
-{
+public class BaseController<T, TK> : Controller {
   private readonly IBaseService<T, TK> _service;
 
-  public BaseController(IBaseService<T, TK> service)
-  {
+  public BaseController(IBaseService<T, TK> service) {
     _service = service;
   }
 
   [HttpGet]
-  public virtual async Task<ActionResult<List<T>>> Get()
-  {
+  public virtual async Task<ActionResult<List<T>>> Get() {
     var result = await _service.GetAll();
 
     if (result == null) return NotFound();
@@ -22,7 +19,7 @@ public class BaseController<T, TK> : Controller
     return Ok(result);
   }
 
-  [HttpGet]
+  [HttpGet("{id}")]
   public virtual async Task<ActionResult<List<T>>> Get(TK id)
   {
     var result = _service.Get(id);
