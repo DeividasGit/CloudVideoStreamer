@@ -23,9 +23,13 @@ public class BaseRepository<T, TK> : IBaseRepository<T, TK> where T : class, IBa
     return _context.Set<T>().AsNoTracking().OrderByDescending(x => x.Id);
   }
 
+  public IQueryable<T> GetAllTrackable() {
+    return _context.Set<T>().OrderByDescending(x => x.Id);
+  }
+
   public IQueryable<T> Get(TK id)
   {
-    return _context.Set<T>().AsNoTracking().Where(x => x.Id.Equals(id));
+    return _context.Set<T>().Where(x => x.Id.Equals(id));
   }
 
   public void Add(T entity) {

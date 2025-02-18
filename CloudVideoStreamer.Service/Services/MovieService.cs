@@ -40,8 +40,11 @@ public class MovieService : BaseService<Movie, int>, IMovieService
 
   public async Task Create(CreateMovieDto model) 
   {
-    var mediaContent = await _unitOfWork.Repository<MediaContent, int>().Get(model.MediaContentId).SingleAsync();
-    if (mediaContent == null) { return; }
+    var mediaContent = _unitOfWork.Repository<MediaContent, int>().Get(model.MediaContentId).FirstOrDefault();
+    if (mediaContent == null) 
+    { 
+      throw new KeyNotFoundException("Media Content not found");
+    }
 
     var movie = new Movie() {
       DurationInSeconds = model.DurationInSeconds,

@@ -9,7 +9,7 @@ namespace CloudVideoStreamer.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
+//[Authorize]
 public class MovieController : BaseController<Movie, int>
 {
   private IMovieService _movieService;
@@ -35,7 +35,7 @@ public class MovieController : BaseController<Movie, int>
 
     var result = _movieService.Create(model);
 
-    if (result == null)
+    if (result.Status == TaskStatus.Faulted)
       return BadRequest(result);
 
     return Created();
