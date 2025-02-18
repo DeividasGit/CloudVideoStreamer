@@ -27,6 +27,7 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(envi
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IMovieService, MovieService>();
 builder.Services.AddScoped<IMediaContentService, MediaContentService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddCors(options =>
   options.AddDefaultPolicy(policy =>

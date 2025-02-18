@@ -30,7 +30,8 @@ public class BaseService<T, TK> : IBaseService<T, TK> where T : class, IBaseEnti
     return await _unitOfWork.Repository<T, TK>().Get(id).SingleAsync();
   }
 
-  public virtual async Task Add(T model) {
+  public virtual async Task Add(T model) 
+  {
     _unitOfWork.Repository<T, TK>().Add(model);
 
     await _unitOfWork.SaveChangesAsync();
