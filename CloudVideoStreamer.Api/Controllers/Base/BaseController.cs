@@ -44,7 +44,7 @@ public class BaseController<T, TK> : Controller {
     return Ok();
   }
 
-  [HttpDelete]
+  [HttpDelete("{id}")]
   public virtual async Task<ActionResult> Delete(TK id)
   {
     await _service.Delete(id);

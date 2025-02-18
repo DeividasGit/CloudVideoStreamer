@@ -24,6 +24,7 @@ public class MovieService : BaseService<Movie, int>, IMovieService
       .Include(x => x.MediaContent)
       .Select(x => new MovieDto
       {
+        Id = x.Id,
         DurationInSeconds = x.DurationInSeconds,
         MediaContent = new MediaContentDto
         {
