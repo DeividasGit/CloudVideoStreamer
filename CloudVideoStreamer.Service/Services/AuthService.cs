@@ -80,5 +80,18 @@ namespace CloudVideoStreamer.Service.Services {
 
       await _unitOfWork.SaveChangesAsync();
     }
+
+    public async Task ValidateRefreshToken(string refreshToken, int userid) 
+    {
+      var token = await _unitOfWork.Repository<RefreshToken, int>()
+        .GetAllTrackable()
+        .Where(x => x.Token == refreshToken && x.UserId == userid && !x.IsRevoked)
+        .FirstOrDefaultAsync();
+
+      if (token == null)
+        throw new SecurityTokenException("Refresh token not found");
+
+      //todo
+    }
   }
 }
