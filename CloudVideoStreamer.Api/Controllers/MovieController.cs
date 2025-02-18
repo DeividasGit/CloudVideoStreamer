@@ -9,7 +9,7 @@ namespace CloudVideoStreamer.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
+//[Authorize]
 public class MovieController : BaseController<Movie, int>
 {
   private IMovieService _movieService;
@@ -28,5 +28,26 @@ public class MovieController : BaseController<Movie, int>
       return NotFound();
 
     return Ok(result);
+  }
+
+  [HttpPost("PostDto")]
+  public async Task<ActionResult> PostDto(CreateMovieDto model) {
+
+    var result = _movieService.Add(model);
+
+    if (result.Status == TaskStatus.Faulted)
+      return BadRequest(result);
+
+    return Created();
+  }
+
+  [HttpPut("PutDto")]
+  public async Task<ActionResult> PutDto(UpdateMovieDto model) {
+    var result = _movieService.Update(model);
+
+    if (result.Status == TaskStatus.Faulted)
+      return BadRequest(result);
+
+    return Ok();
   }
 }

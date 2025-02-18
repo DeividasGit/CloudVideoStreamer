@@ -17,13 +17,14 @@ public class MovieService : BaseService<Movie, int>, IMovieService
     _unitOfWork = unitOfWork;
   }
 
-  public new async Task<List<MovieDto>> GetAll()
+  public async Task<List<MovieDto>> GetAll()
   {
     var movies = await _unitOfWork.Repository<Movie, int>()
       .GetAll()
       .Include(x => x.MediaContent)
       .Select(x => new MovieDto
       {
+        Id = x.Id,
         DurationInSeconds = x.DurationInSeconds,
         MediaContent = new MediaContentDto
         {
@@ -36,5 +37,44 @@ public class MovieService : BaseService<Movie, int>, IMovieService
       .ToListAsync();
 
     return movies;
+  }
+
+  public async Task Add(CreateMovieDto model) 
+  {
+    var mediaContent = _unitOfWork.Repository<MediaContent, int>().Get(model.MediaContentId).FirstOrDefault();
+    if (mediaContent == null) 
+    { 
+      throw new KeyNotFoundException("Media Content not found");
+    }
+
+    var movie = new Movie() {
+      DurationInSeconds = model.DurationInSeconds,
+      MediaContentId = model.MediaContentId,
+      MediaContent = mediaContent
+    };
+
+    _unitOfWork.Repository<Movie, int>().Add(movie);
+
+    await _unitOfWork.SaveChangesAsync();
+  }
+
+  public async Task Update(UpdateMovieDto model) {
+    var mediaContent = _unitOfWork.Repository<MediaContent, int>().Get(model.MediaContentId).FirstOrDefault();
+    if (mediaContent == null) 
+    {
+      throw new KeyNotFoundException("Media Content not found");
+    }
+
+    var movie = new Movie() 
+    {
+      Id = model.Id,
+      DurationInSeconds = model.DurationInSeconds,
+      MediaContentId = model.MediaContentId,
+      MediaContent = mediaContent
+    };
+
+    _unitOfWork.Repository<Movie, int>().Update(movie);
+
+    await _unitOfWork.SaveChangesAsync();
   }
 }
