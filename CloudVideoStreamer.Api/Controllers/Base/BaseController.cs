@@ -32,6 +32,13 @@ public class BaseController<T, TK> : Controller
     return Ok(result);
   }
 
+  [HttpPost]
+  public virtual async Task<ActionResult> Post(T model) {
+    await _service.Add(model);
+
+    return Created();
+  }
+
   [HttpPut]
   public virtual async Task<ActionResult> Put(T model)
   {

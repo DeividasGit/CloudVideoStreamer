@@ -25,7 +25,6 @@ var environmentConnectionString = Environment.GetEnvironmentVariable(connectionS
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(environmentConnectionString));
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
 builder.Services.AddScoped<IMovieService, MovieService>();
 
 builder.Services.AddCors(options =>
