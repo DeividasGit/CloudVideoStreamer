@@ -1,6 +1,7 @@
 using CloudVideoStreamer.Repository;
 using CloudVideoStreamer.Repository.Interfaces;
 using CloudVideoStreamer.Repository.Repositories;
+using CloudVideoStreamer.Repository.Settings;
 using CloudVideoStreamer.Service.Interfaces;
 using CloudVideoStreamer.Service.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -27,6 +28,7 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(envi
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IMovieService, MovieService>();
 builder.Services.AddScoped<IMediaContentService, MediaContentService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddCors(options =>
@@ -34,6 +36,8 @@ builder.Services.AddCors(options =>
     policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()
   )
 );
+
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 
 var jwtSecret = builder.Configuration.GetValue<string>("InternalAuthKey");
 var environmentJwtSecret = Environment.GetEnvironmentVariable(jwtSecret) ?? jwtSecret;
@@ -51,7 +55,9 @@ builder.Services.AddAuthentication(options =>
     ValidateIssuerSigningKey = true,
     IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(environmentJwtSecret)),
     ValidateIssuer = false,
-    ValidateAudience = false
+    ValidateAudience = false,
+    ValidateLifetime = true,
+    ClockSkew = TimeSpan.Zero
   };
 });
 
