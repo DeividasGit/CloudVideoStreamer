@@ -38,7 +38,7 @@ namespace CloudVideoStreamer.Service.Services {
             new Claim(ClaimTypes.Name, user.Name),
             new Claim(ClaimTypes.Email, user.Email)
           }),
-        Expires = DateTime.UtcNow.AddHours(1),
+        Expires = DateTime.UtcNow.AddMinutes(30),
         SigningCredentials = new SigningCredentials(
           new SymmetricSecurityKey(encryptedKey), 
           SecurityAlgorithms.HmacSha256Signature
@@ -66,6 +66,19 @@ namespace CloudVideoStreamer.Service.Services {
         .FirstOrDefaultAsync();
 
       return user;
+    }
+
+    public async Task StoreRefreshToken(string refreshToken, User user, TimeSpan expiration) 
+    {
+      _unitOfWork.Repository<RefreshToken, int>().Add(new RefreshToken() {
+        Token = refreshToken,
+        ExpirationDate = DateTime.UtcNow.Add(expiration),
+        IsRevoked = false,
+        UserId = user.Id,
+        User = user
+      });
+
+      await _unitOfWork.SaveChangesAsync();
     }
   }
 }

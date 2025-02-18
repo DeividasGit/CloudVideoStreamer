@@ -13,5 +13,6 @@ namespace CloudVideoStreamer.Service.Interfaces {
     string GenerateAccessToken(User user);
     string GenerateRefreshToken();
     Task<User> GetUser(UserLoginDto model);
+    Task StoreRefreshToken(string refreshToken, User user, TimeSpan expiration);
   }
 }

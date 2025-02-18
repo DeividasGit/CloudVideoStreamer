@@ -2,12 +2,16 @@
 using CloudVideoStreamer.Repository.Models;
 using CloudVideoStreamer.Service.Interfaces;
 using CloudVideoStreamer.Service.Interfaces.Base;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CloudVideoStreamer.Api.Controllers {
+  [ApiController]
+  [Route("api/[controller]")]
+  [Authorize]
   public class UserController : BaseController<User, int> {
     
-    IUserService _userService;
+    private readonly IUserService _userService;
 
     public UserController(IUserService userService) : base(userService) 
     {

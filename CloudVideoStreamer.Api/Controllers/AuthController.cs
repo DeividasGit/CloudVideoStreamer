@@ -1,4 +1,5 @@
 ﻿using CloudVideoStreamer.Repository.DTOs;
+using CloudVideoStreamer.Repository.Settings;
 using CloudVideoStreamer.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,11 +8,13 @@ namespace CloudVideoStreamer.Api.Controllers {
   [Route("api/[controller]")]
   public class AuthController : Controller 
   {
-    IAuthService _authService;
+    private readonly IAuthService _authService;
+    private readonly JwtSettings _jwtSettings;
 
-    public AuthController(IAuthService authService) 
+    public AuthController(IAuthService authService, JwtSettings jwtSettings) 
     {
       _authService = authService;
+      _jwtSettings = jwtSettings;
     }
 
     [HttpPost("Login")]
@@ -20,12 +23,26 @@ namespace CloudVideoStreamer.Api.Controllers {
       var user = await _authService.GetUser(model);
 
       if (user == null)
-        return Unauthorized(ModelState);
+        return Unauthorized("Invalid credentials");
 
       var token = _authService.GenerateAccessToken(user);
 
       if (token == string.Empty)
         return BadRequest();
+
+      var refreshToken = _authService.GenerateRefreshToken();
+
+      if (refreshToken == string.Empty)
+        return BadRequest();
+
+      Response.Cookies.Append("refresh_token", refreshToken, new CookieOptions() {
+        Secure = true,
+        HttpOnly = true,
+        SameSite = SameSiteMode.Strict,
+        Expires = DateTimeOffset.UtcNow.Add(_jwtSettings.RefreshTokenExpiration)
+      });
+
+      await _authService.StoreRefreshToken(refreshToken, user, _jwtSettings.RefreshTokenExpiration);
 
       var response = new UserLoginResponseDto() 
       {
