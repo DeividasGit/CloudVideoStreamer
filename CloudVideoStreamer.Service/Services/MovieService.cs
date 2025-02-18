@@ -17,7 +17,7 @@ public class MovieService : BaseService<Movie, int>, IMovieService
     _unitOfWork = unitOfWork;
   }
 
-  public new async Task<List<MovieDto>> GetAll()
+  public async Task<List<MovieDto>> GetAll()
   {
     var movies = await _unitOfWork.Repository<Movie, int>()
       .GetAll()
@@ -39,7 +39,7 @@ public class MovieService : BaseService<Movie, int>, IMovieService
     return movies;
   }
 
-  public async Task Create(CreateMovieDto model) 
+  public async Task Add(CreateMovieDto model) 
   {
     var mediaContent = _unitOfWork.Repository<MediaContent, int>().Get(model.MediaContentId).FirstOrDefault();
     if (mediaContent == null) 
@@ -54,6 +54,26 @@ public class MovieService : BaseService<Movie, int>, IMovieService
     };
 
     _unitOfWork.Repository<Movie, int>().Add(movie);
+
+    await _unitOfWork.SaveChangesAsync();
+  }
+
+  public async Task Update(UpdateMovieDto model) {
+    var mediaContent = _unitOfWork.Repository<MediaContent, int>().Get(model.MediaContentId).FirstOrDefault();
+    if (mediaContent == null) 
+    {
+      throw new KeyNotFoundException("Media Content not found");
+    }
+
+    var movie = new Movie() 
+    {
+      Id = model.Id,
+      DurationInSeconds = model.DurationInSeconds,
+      MediaContentId = model.MediaContentId,
+      MediaContent = mediaContent
+    };
+
+    _unitOfWork.Repository<Movie, int>().Update(movie);
 
     await _unitOfWork.SaveChangesAsync();
   }

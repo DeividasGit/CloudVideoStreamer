@@ -7,5 +7,6 @@ namespace CloudVideoStreamer.Service.Interfaces;
 public interface IMovieService : IBaseService<Movie, int>
 {
   Task<List<MovieDto>> GetAll();
-  Task Create(CreateMovieDto model);
+  Task Add(CreateMovieDto model);
+  Task Update(UpdateMovieDto model);
 }

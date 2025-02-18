@@ -31,13 +31,23 @@ public class MovieController : BaseController<Movie, int>
   }
 
   [HttpPost("PostDto")]
-  public async Task<ActionResult> Post(CreateMovieDto model) {
+  public async Task<ActionResult> PostDto(CreateMovieDto model) {
 
-    var result = _movieService.Create(model);
+    var result = _movieService.Add(model);
 
     if (result.Status == TaskStatus.Faulted)
       return BadRequest(result);
 
     return Created();
+  }
+
+  [HttpPut("PutDto")]
+  public async Task<ActionResult> PutDto(UpdateMovieDto model) {
+    var result = _movieService.Update(model);
+
+    if (result.Status == TaskStatus.Faulted)
+      return BadRequest(result);
+
+    return Ok();
   }
 }
