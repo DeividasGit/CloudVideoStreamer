@@ -37,4 +37,20 @@ public class MovieService : BaseService<Movie, int>, IMovieService
 
     return movies;
   }
+
+  public async Task Create(CreateMovieDto model) 
+  {
+    var mediaContent = await _unitOfWork.Repository<MediaContent, int>().Get(model.MediaContentId).SingleAsync();
+    if (mediaContent == null) { return; }
+
+    var movie = new Movie() {
+      DurationInSeconds = model.DurationInSeconds,
+      MediaContentId = model.MediaContentId,
+      MediaContent = mediaContent
+    };
+
+    _unitOfWork.Repository<Movie, int>().Add(movie);
+
+    await _unitOfWork.SaveChangesAsync();
+  }
 }

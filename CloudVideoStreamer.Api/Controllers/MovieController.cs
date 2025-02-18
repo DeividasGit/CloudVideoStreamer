@@ -29,4 +29,15 @@ public class MovieController : BaseController<Movie, int>
 
     return Ok(result);
   }
+
+  [HttpPost("PostDto")]
+  public async Task<ActionResult> Post(CreateMovieDto model) {
+
+    var result = _movieService.Create(model);
+
+    if (result == null)
+      return BadRequest(result);
+
+    return Created();
+  }
 }
