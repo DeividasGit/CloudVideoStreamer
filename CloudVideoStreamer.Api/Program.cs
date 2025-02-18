@@ -26,6 +26,7 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(envi
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IMovieService, MovieService>();
+builder.Services.AddScoped<IMediaContentService, MediaContentService>();
 
 builder.Services.AddCors(options =>
   options.AddDefaultPolicy(policy =>
@@ -40,6 +41,7 @@ builder.Services.AddAuthentication(options =>
 {
   options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
   options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+
 }).AddJwtBearer(options =>
 {
   options.SaveToken = true;
