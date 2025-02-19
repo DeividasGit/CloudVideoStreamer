@@ -1,6 +1,8 @@
-﻿using CloudVideoStreamer.Repository.DTOs;
+﻿using Azure;
+using CloudVideoStreamer.Repository.DTOs;
 using CloudVideoStreamer.Repository.Interfaces;
 using CloudVideoStreamer.Repository.Models;
+using CloudVideoStreamer.Repository.Settings;
 using CloudVideoStreamer.Service.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -14,38 +16,43 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CloudVideoStreamer.Service.Services {
-  public class AuthService : IAuthService {
-
+namespace CloudVideoStreamer.Service.Services
+{
+  public class AuthService : IAuthService
+  {
     private readonly IConfiguration _configuration;
     private readonly IUnitOfWork _unitOfWork;
 
-    public AuthService(IConfiguration configuration, IUnitOfWork unitOfWork) 
+    public AuthService(IConfiguration configuration, IUnitOfWork unitOfWork)
     {
       _configuration = configuration;
       _unitOfWork = unitOfWork;
     }
-    public string GenerateAccessToken(User user) {
+
+    public string GenerateAccessToken(User user)
+    {
       var key = _configuration["InternalAuthKey"].ToString();
       var environmentKey = Environment.GetEnvironmentVariable(key) ?? key;
 
       var encryptedKey = Encoding.ASCII.GetBytes(environmentKey);
       var tokenHandler = new JwtSecurityTokenHandler();
 
-      var tokenDescriptor = new SecurityTokenDescriptor() {
+      var tokenDescriptor = new SecurityTokenDescriptor()
+      {
         Subject = new ClaimsIdentity(
-          new Claim[] {
+          new Claim[]
+          {
             new Claim(ClaimTypes.Name, user.Name),
             new Claim(ClaimTypes.Email, user.Email)
           }),
         Expires = DateTime.UtcNow.AddMinutes(30),
         SigningCredentials = new SigningCredentials(
-          new SymmetricSecurityKey(encryptedKey), 
+          new SymmetricSecurityKey(encryptedKey),
           SecurityAlgorithms.HmacSha256Signature
         )
       };
 
-      var generatedToken = tokenHandler.CreateJwtSecurityToken(tokenDescriptor); 
+      var generatedToken = tokenHandler.CreateJwtSecurityToken(tokenDescriptor);
       var token = tokenHandler.WriteToken(generatedToken);
 
       if (token == string.Empty)
@@ -54,11 +61,12 @@ namespace CloudVideoStreamer.Service.Services {
       return token;
     }
 
-    public string GenerateRefreshToken() {
+    public string GenerateRefreshToken()
+    {
       return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
     }
 
-    public async Task<User> GetUser(UserLoginDto model) 
+    public async Task<User> AuthenticateUser(UserLoginDto model)
     {
       var user = await _unitOfWork.Repository<User, int>()
         .GetAllTrackable()
@@ -68,9 +76,10 @@ namespace CloudVideoStreamer.Service.Services {
       return user;
     }
 
-    public async Task StoreRefreshToken(string refreshToken, User user, TimeSpan expiration) 
+    public async Task AddRefreshToken(string refreshToken, User user, TimeSpan expiration)
     {
-      _unitOfWork.Repository<RefreshToken, int>().Add(new RefreshToken() {
+      _unitOfWork.Repository<RefreshToken, int>().Add(new RefreshToken()
+      {
         Token = refreshToken,
         ExpirationDate = DateTime.UtcNow.Add(expiration),
         IsRevoked = false,
@@ -81,7 +90,21 @@ namespace CloudVideoStreamer.Service.Services {
       await _unitOfWork.SaveChangesAsync();
     }
 
-    public async Task ValidateRefreshToken(string refreshToken, int userid) 
+    public async Task UpdateRefreshToken(string refreshToken, User user, TimeSpan expiration)
+    {
+      _unitOfWork.Repository<RefreshToken, int>().Add(new RefreshToken()
+      {
+        Token = refreshToken,
+        ExpirationDate = DateTime.UtcNow.Add(expiration),
+        IsRevoked = false,
+        UserId = user.Id,
+        User = user
+      });
+
+      await _unitOfWork.SaveChangesAsync();
+    }
+
+    public async Task<RefreshToken> ValidateRefreshToken(string refreshToken, int userid)
     {
       var token = await _unitOfWork.Repository<RefreshToken, int>()
         .GetAllTrackable()
@@ -91,7 +114,22 @@ namespace CloudVideoStreamer.Service.Services {
       if (token == null)
         throw new SecurityTokenException("Refresh token not found");
 
-      //todo
+      return token;
+    }
+
+    public async Task HandleTokens()
+    {
+      var refreshToken = GenerateRefreshToken();
+
+      if (string.IsNullOrEmpty(refreshToken))
+        return;
+
+      var token = GenerateAccessToken(user);
+
+      if (string.IsNullOrEmpty(token))
+        return;
+
+      await StoreRefreshToken(refreshToken, user, _jwtSettings.RefreshTokenExpiration);
     }
   }
 }
