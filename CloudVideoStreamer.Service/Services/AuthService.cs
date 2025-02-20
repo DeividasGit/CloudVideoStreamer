@@ -89,7 +89,7 @@ namespace CloudVideoStreamer.Service.Services
       if (token == null)
         throw new SecurityTokenException("Refresh token not found");
 
-      if (token.ExpirationDate >= DateTime.UtcNow)
+      if (token.ExpirationDate <= DateTime.UtcNow)
         throw new SecurityTokenException("Refresh token expired");
 
       if(token.LastUsed.Add(inactivePeriod) <= DateTime.UtcNow)
