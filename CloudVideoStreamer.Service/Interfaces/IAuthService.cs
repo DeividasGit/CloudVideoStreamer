@@ -11,11 +11,13 @@ namespace CloudVideoStreamer.Service.Interfaces
 {
   public interface IAuthService
   {
-    string GenerateAccessToken(User user);
+    string GenerateAccessToken(User user, TimeSpan expiration);
     string GenerateRefreshToken();
     Task<User> ValidateUserLogin(UserLoginDto model);
+    Task<User> ValidateUserLogin(int userid);
     Task<RefreshToken> ValidateRefreshToken(string refreshToken, int userid);
-    Task AddRefreshTokenToDatabase(string refreshToken, User user, TimeSpan expiration);
-    Task UpdateRefreshTokenToDatabase(RefreshToken refreshToken, string newRefreshToken, TimeSpan expiration);
+    Task AddRefreshToken(string refreshToken, User user, TimeSpan expiration);
+    Task UpdateRefreshToken(RefreshToken refreshToken, string newRefreshToken, TimeSpan expiration);
+    Task RevokeRefreshToken(RefreshToken refreshToken);
   }
 }

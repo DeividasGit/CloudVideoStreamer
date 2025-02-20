@@ -31,7 +31,7 @@ namespace CloudVideoStreamer.Service.Services
       _userService = userService;
     }
 
-    public string GenerateAccessToken(User user)
+    public string GenerateAccessToken(User user, TimeSpan expiration)
     {
       var key = _configuration["InternalAuthKey"].ToString();
       var environmentKey = Environment.GetEnvironmentVariable(key) ?? key;
@@ -47,7 +47,7 @@ namespace CloudVideoStreamer.Service.Services
             new Claim(ClaimTypes.Name, user.Name),
             new Claim(ClaimTypes.Email, user.Email)
           }),
-        Expires = DateTime.UtcNow.AddMinutes(30),
+        Expires = DateTime.UtcNow.Add(expiration),
         SigningCredentials = new SigningCredentials(
           new SymmetricSecurityKey(encryptedKey),
           SecurityAlgorithms.HmacSha256Signature
@@ -75,19 +75,29 @@ namespace CloudVideoStreamer.Service.Services
       return user;
     }
 
+    public async Task<User> ValidateUserLogin(int userid) {
+      var user = await _userService.Get(userid);
+
+      return user;
+    }
+
     public async Task<RefreshToken> ValidateRefreshToken(string refreshToken, int userid) {
       var token = await _unitOfWork.Repository<RefreshToken, int>()
         .GetAllTrackable()
         .Where(x => x.Token == refreshToken && x.UserId == userid && !x.IsRevoked)
         .FirstOrDefaultAsync();
-
       if (token == null)
         throw new SecurityTokenException("Refresh token not found");
+
+      if (token.ExpirationDate >= DateTime.UtcNow)
+        throw new SecurityTokenException("Refresh token expired");
+
+      await RevokeToken(token);
 
       return token;
     }
 
-    public async Task AddRefreshTokenToDatabase(string refreshToken, User user, TimeSpan expiration)
+    public async Task AddRefreshToken(string refreshToken, User user, TimeSpan expiration)
     {
       _unitOfWork.Repository<RefreshToken, int>().Add(new RefreshToken()
       {
@@ -101,10 +111,19 @@ namespace CloudVideoStreamer.Service.Services
       await _unitOfWork.SaveChangesAsync();
     }
 
-    public async Task UpdateRefreshTokenToDatabase(RefreshToken refreshToken, string newRefreshToken, TimeSpan expiration)
+    public async Task UpdateRefreshToken(RefreshToken refreshToken, string newRefreshToken, TimeSpan expiration)
     {
       refreshToken.Token = newRefreshToken;
       refreshToken.ExpirationDate = DateTime.UtcNow.Add(expiration);
+
+      _unitOfWork.Repository<RefreshToken, int>().Update(refreshToken);
+
+      await _unitOfWork.SaveChangesAsync();
+    }
+
+    public async Task RevokeToken(RefreshToken refreshToken) 
+    {
+      refreshToken.IsRevoked = true;
 
       _unitOfWork.Repository<RefreshToken, int>().Update(refreshToken);
 
