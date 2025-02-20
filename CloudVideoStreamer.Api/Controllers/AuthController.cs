@@ -91,12 +91,7 @@ namespace CloudVideoStreamer.Api.Controllers
 
         await _authService.AddRefreshToken(refreshToken, user, _jwtSettings.Value.RefreshTokenExpiration);
 
-        Response.Cookies.Append("refresh_token", refreshToken, new CookieOptions() {
-          Secure = true,
-          HttpOnly = true,
-          SameSite = SameSiteMode.Strict,
-          Expires = DateTimeOffset.UtcNow.Add(_jwtSettings.Value.RefreshTokenExpiration)
-        });
+        SetRefreshTokenCookie(refreshToken);
 
         var response = new UserLoginResponseDto() {
           Id = user.Id,
@@ -149,12 +144,7 @@ namespace CloudVideoStreamer.Api.Controllers
 
         await _authService.UpdateRefreshToken(refreshTokenObj, newRefreshToken, _jwtSettings.Value.RefreshTokenExpiration);
 
-        Response.Cookies.Append("refresh_token", newRefreshToken, new CookieOptions() {
-          Secure = true,
-          HttpOnly = true,
-          SameSite = SameSiteMode.Strict,
-          Expires = DateTimeOffset.UtcNow.Add(_jwtSettings.Value.RefreshTokenExpiration)
-        });
+        SetRefreshTokenCookie(newRefreshToken);
 
         var response = new UserLoginResponseDto() {
           Id = user.Id,
@@ -197,6 +187,15 @@ namespace CloudVideoStreamer.Api.Controllers
         _logger.LogError(ex, "An error occurred while loging out user ID: {UserId}", id);
         return StatusCode(500, "Internal server error");
       }
+    }
+
+    private void SetRefreshTokenCookie(string refreshToken) {
+      Response.Cookies.Append("refresh_token", refreshToken, new CookieOptions() {
+        Secure = true,
+        HttpOnly = true,
+        SameSite = SameSiteMode.Strict,
+        Expires = DateTimeOffset.UtcNow.Add(_jwtSettings.Value.RefreshTokenExpiration)
+      });
     }
   }
 }
