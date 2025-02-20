@@ -3,6 +3,7 @@ using CloudVideoStreamer.Repository.Models;
 using CloudVideoStreamer.Repository.Settings;
 using CloudVideoStreamer.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace CloudVideoStreamer.Api.Controllers
 {
@@ -11,9 +12,9 @@ namespace CloudVideoStreamer.Api.Controllers
   public class AuthController : Controller
   {
     private readonly IAuthService _authService;
-    private readonly JwtSettings _jwtSettings;
+    private readonly IOptions<JwtSettings> _jwtSettings;
 
-    public AuthController(IAuthService authService, JwtSettings jwtSettings)
+    public AuthController(IAuthService authService, IOptions<JwtSettings> jwtSettings)
     {
       _authService = authService;
       _jwtSettings = jwtSettings;
@@ -34,14 +35,14 @@ namespace CloudVideoStreamer.Api.Controllers
       if (refreshToken == string.Empty)
         return BadRequest();
 
-      await _authService.AddRefreshTokenToDatabase(refreshToken, user, _jwtSettings.RefreshTokenExpiration);
+      await _authService.AddRefreshTokenToDatabase(refreshToken, user, _jwtSettings.Value.RefreshTokenExpiration);
 
       Response.Cookies.Append("refresh_token", refreshToken, new CookieOptions()
       {
         Secure = true,
         HttpOnly = true,
         SameSite = SameSiteMode.Strict,
-        Expires = DateTimeOffset.UtcNow.Add(_jwtSettings.RefreshTokenExpiration)
+        Expires = DateTimeOffset.UtcNow.Add(_jwtSettings.Value.RefreshTokenExpiration)
       });
 
       var response = new UserLoginResponseDto()
@@ -69,14 +70,14 @@ namespace CloudVideoStreamer.Api.Controllers
       if (newRefreshToken == string.Empty)
         BadRequest("Could not generate new token");
 
-      await _authService.UpdateRefreshTokenToDatabase(refreshTokenObj, newRefreshToken, _jwtSettings.RefreshTokenExpiration);
+      await _authService.UpdateRefreshTokenToDatabase(refreshTokenObj, newRefreshToken, _jwtSettings.Value.RefreshTokenExpiration);
 
       Response.Cookies.Append("refresh_token", newRefreshToken, new CookieOptions()
       {
         Secure = true,
         HttpOnly = true,
         SameSite = SameSiteMode.Strict,
-        Expires = DateTimeOffset.UtcNow.Add(_jwtSettings.RefreshTokenExpiration)
+        Expires = DateTimeOffset.UtcNow.Add(_jwtSettings.Value.RefreshTokenExpiration)
       });
 
       return Ok();
