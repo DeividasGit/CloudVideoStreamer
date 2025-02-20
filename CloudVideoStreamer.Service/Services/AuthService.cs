@@ -22,11 +22,13 @@ namespace CloudVideoStreamer.Service.Services
   {
     private readonly IConfiguration _configuration;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IUserService _userService;
 
-    public AuthService(IConfiguration configuration, IUnitOfWork unitOfWork)
+    public AuthService(IConfiguration configuration, IUnitOfWork unitOfWork, IUserService userService)
     {
       _configuration = configuration;
       _unitOfWork = unitOfWork;
+      _userService = userService;
     }
 
     public string GenerateAccessToken(User user)
@@ -66,46 +68,14 @@ namespace CloudVideoStreamer.Service.Services
       return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
     }
 
-    public async Task<User> AuthenticateUser(UserLoginDto model)
+    public async Task<User> ValidateUserLogin(UserLoginDto model)
     {
-      var user = await _unitOfWork.Repository<User, int>()
-        .GetAllTrackable()
-        .Where(x => x.Email == model.Email && x.Password == model.Password)
-        .FirstOrDefaultAsync();
+      var user = await _userService.Get(model);
 
       return user;
     }
 
-    public async Task AddRefreshToken(string refreshToken, User user, TimeSpan expiration)
-    {
-      _unitOfWork.Repository<RefreshToken, int>().Add(new RefreshToken()
-      {
-        Token = refreshToken,
-        ExpirationDate = DateTime.UtcNow.Add(expiration),
-        IsRevoked = false,
-        UserId = user.Id,
-        User = user
-      });
-
-      await _unitOfWork.SaveChangesAsync();
-    }
-
-    public async Task UpdateRefreshToken(string refreshToken, User user, TimeSpan expiration)
-    {
-      _unitOfWork.Repository<RefreshToken, int>().Add(new RefreshToken()
-      {
-        Token = refreshToken,
-        ExpirationDate = DateTime.UtcNow.Add(expiration),
-        IsRevoked = false,
-        UserId = user.Id,
-        User = user
-      });
-
-      await _unitOfWork.SaveChangesAsync();
-    }
-
-    public async Task<RefreshToken> ValidateRefreshToken(string refreshToken, int userid)
-    {
+    public async Task<RefreshToken> ValidateRefreshToken(string refreshToken, int userid) {
       var token = await _unitOfWork.Repository<RefreshToken, int>()
         .GetAllTrackable()
         .Where(x => x.Token == refreshToken && x.UserId == userid && !x.IsRevoked)
@@ -117,19 +87,29 @@ namespace CloudVideoStreamer.Service.Services
       return token;
     }
 
-    public async Task HandleTokens()
+    public async Task AddRefreshTokenToDatabase(string refreshToken, User user, TimeSpan expiration)
     {
-      var refreshToken = GenerateRefreshToken();
+      _unitOfWork.Repository<RefreshToken, int>().Add(new RefreshToken()
+      {
+        Token = refreshToken,
+        ExpirationDate = DateTime.UtcNow.Add(expiration),
+        IsRevoked = false,
+        UserId = user.Id,
+        User = user
+      });
 
-      if (string.IsNullOrEmpty(refreshToken))
-        return;
-
-      var token = GenerateAccessToken(user);
-
-      if (string.IsNullOrEmpty(token))
-        return;
-
-      await StoreRefreshToken(refreshToken, user, _jwtSettings.RefreshTokenExpiration);
+      await _unitOfWork.SaveChangesAsync();
     }
+
+    public async Task UpdateRefreshTokenToDatabase(RefreshToken refreshToken, string newRefreshToken, TimeSpan expiration)
+    {
+      refreshToken.Token = newRefreshToken;
+      refreshToken.ExpirationDate = DateTime.UtcNow.Add(expiration);
+
+      _unitOfWork.Repository<RefreshToken, int>().Update(refreshToken);
+
+      await _unitOfWork.SaveChangesAsync();
+    }
+
   }
 }

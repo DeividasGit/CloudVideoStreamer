@@ -13,9 +13,9 @@ namespace CloudVideoStreamer.Service.Interfaces
   {
     string GenerateAccessToken(User user);
     string GenerateRefreshToken();
-    Task<User> AuthenticateUser(UserLoginDto model);
+    Task<User> ValidateUserLogin(UserLoginDto model);
+    Task<RefreshToken> ValidateRefreshToken(string refreshToken, int userid);
     Task AddRefreshTokenToDatabase(string refreshToken, User user, TimeSpan expiration);
-    Task UpdateRefreshTokenToDatabase(string refreshToken, User user, TimeSpan expiration);
-    Task<RefreshToken> ValidateRefreshToken(string refreshToken, int id);
+    Task UpdateRefreshTokenToDatabase(RefreshToken refreshToken, string newRefreshToken, TimeSpan expiration);
   }
 }

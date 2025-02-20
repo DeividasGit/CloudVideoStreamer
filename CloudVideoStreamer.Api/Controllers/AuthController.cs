@@ -22,8 +22,7 @@ namespace CloudVideoStreamer.Api.Controllers
     [HttpPost("Login")]
     public async Task<ActionResult<UserLoginResponseDto>> Login(UserLoginDto model)
     {
-      //todo get from user service(validate user)
-      var user = await _authService.AuthenticateUser(model);
+      var user = await _authService.ValidateUserLogin(model);
       if (user == null)
         return Unauthorized("Invalid credentials");
 
@@ -35,6 +34,8 @@ namespace CloudVideoStreamer.Api.Controllers
       if (refreshToken == string.Empty)
         return BadRequest();
 
+      await _authService.AddRefreshTokenToDatabase(refreshToken, user, _jwtSettings.RefreshTokenExpiration);
+
       Response.Cookies.Append("refresh_token", refreshToken, new CookieOptions()
       {
         Secure = true,
@@ -42,8 +43,6 @@ namespace CloudVideoStreamer.Api.Controllers
         SameSite = SameSiteMode.Strict,
         Expires = DateTimeOffset.UtcNow.Add(_jwtSettings.RefreshTokenExpiration)
       });
-
-      await _authService.AddRefreshTokenToDatabase(refreshToken, user, _jwtSettings.RefreshTokenExpiration);
 
       var response = new UserLoginResponseDto()
       {
@@ -62,11 +61,15 @@ namespace CloudVideoStreamer.Api.Controllers
       if (refreshToken == string.Empty)
         Unauthorized("Refresh token not found");
 
-      await _authService.ValidateRefreshToken(refreshToken, id);
+      var refreshTokenObj = await _authService.ValidateRefreshToken(refreshToken, id);
+      if (refreshTokenObj == null)
+        NotFound("Refresh token not found");
 
       var newRefreshToken = _authService.GenerateRefreshToken();
       if (newRefreshToken == string.Empty)
         BadRequest("Could not generate new token");
+
+      await _authService.UpdateRefreshTokenToDatabase(refreshTokenObj, newRefreshToken, _jwtSettings.RefreshTokenExpiration);
 
       Response.Cookies.Append("refresh_token", newRefreshToken, new CookieOptions()
       {
@@ -75,8 +78,6 @@ namespace CloudVideoStreamer.Api.Controllers
         SameSite = SameSiteMode.Strict,
         Expires = DateTimeOffset.UtcNow.Add(_jwtSettings.RefreshTokenExpiration)
       });
-
-      await _authService.UpdateRefreshTokenToDatabase(refreshToken, user, _jwtSettings.RefreshTokenExpiration);
 
       return Ok();
     }
