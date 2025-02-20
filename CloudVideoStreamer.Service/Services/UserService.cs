@@ -21,11 +21,20 @@ namespace CloudVideoStreamer.Service.Services
       _unitOfWork = unitOfWork;
     }
 
+    public async Task<User> Get(UserRegisterDto model) {
+      var user = await _unitOfWork.Repository<User, int>()
+        .GetAll()
+        .Where(x => x.Email == model.Email)
+        .FirstOrDefaultAsync();
+
+      return user;
+    }
+
     public async Task<User> Get(UserLoginDto model)
     {
       var user = await _unitOfWork.Repository<User, int>()
-        .GetAllTrackable()
-        .Where(x => x.Email == model.Email && x.Password == model.Password)
+        .GetAll()
+        .Where(x => x.Email == model.Email)
         .FirstOrDefaultAsync();
 
       return user;

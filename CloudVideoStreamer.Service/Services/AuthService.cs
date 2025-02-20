@@ -4,11 +4,14 @@ using CloudVideoStreamer.Repository.Interfaces;
 using CloudVideoStreamer.Repository.Models;
 using CloudVideoStreamer.Repository.Settings;
 using CloudVideoStreamer.Service.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -23,12 +26,15 @@ namespace CloudVideoStreamer.Service.Services
     private readonly IConfiguration _configuration;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IUserService _userService;
+    private readonly ILogger<AuthService> _logger;
 
-    public AuthService(IConfiguration configuration, IUnitOfWork unitOfWork, IUserService userService)
+    public AuthService(IConfiguration configuration, IUnitOfWork unitOfWork, IUserService userService, 
+      ILogger<AuthService> logger)
     {
       _configuration = configuration;
       _unitOfWork = unitOfWork;
       _userService = userService;
+      _logger = logger;
     }
 
     public string GenerateAccessToken(User user, TimeSpan expiration)
@@ -68,14 +74,63 @@ namespace CloudVideoStreamer.Service.Services
       return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
     }
 
-    public async Task<User> ValidateUserLogin(UserLoginDto model)
+    public async Task<User> ValidateUserRegistration(UserRegisterDto model) 
     {
-      var user = await _userService.Get(model);
+
+      //var passwordValidator = new PasswordValidator<User>();
+
+      var newUser = new User() {
+        Name = model.Name,
+        Email = model.Email,
+        Password = model.Password
+      };
+
+      //var result = await passwordValidator.ValidateAsync(null, newUser, newUser.Password);
+      //if (!result.Succeeded) 
+      //{
+      //  foreach (var error in result.Errors) {
+      //    _logger.LogError(error.Description);
+      //    throw new ValidationException(error.Description);
+      //  }
+      //}
+
+      var existingUser = await _userService.Get(model);
+
+      return existingUser;
+    }
+
+    public async Task<User> RegisterUser(UserRegisterDto model) 
+    {
+      var passwordHasher = new PasswordHasher<User>();
+
+      var user = new User() {
+        Name = model.Name,
+        Email = model.Email,
+        Password = passwordHasher.HashPassword(null, model.Password)
+    };
+
+      await _userService.Add(user);
 
       return user;
     }
 
-    public async Task<User> ValidateUserLogin(int userid) {
+    public async Task<User> ValidateUserLogin(UserLoginDto model)
+    {
+      var user = await _userService.Get(model);
+
+      var passwordHasher = new PasswordHasher<User>();
+      var result = passwordHasher.VerifyHashedPassword(user, user.Password, model.Password);
+
+      if(result != PasswordVerificationResult.Success)
+      {
+        _logger.LogWarning(result.ToString());
+        throw new ValidationException(result.ToString());
+      }
+
+      return user;
+    }
+
+    public async Task<User> GetUser(int userid) {
       var user = await _userService.Get(userid);
 
       return user;

@@ -11,6 +11,7 @@ namespace CloudVideoStreamer.Service.Interfaces
 {
   public interface IUserService : IBaseService<User, int>
   {
+    Task<User> Get(UserRegisterDto model);
     Task<User> Get(UserLoginDto model);
   }
 }

@@ -4,6 +4,7 @@ using CloudVideoStreamer.Repository.Models;
 using CloudVideoStreamer.Repository.Settings;
 using CloudVideoStreamer.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 
@@ -24,11 +25,46 @@ namespace CloudVideoStreamer.Api.Controllers
       _logger = logger;
     }
 
+    [HttpPost("Register")]
+    public async Task<ActionResult> Register(UserRegisterDto model) {
+      try
+      {
+        if (!ModelState.IsValid)
+        {
+          _logger.LogWarning("Model not valid");
+          return BadRequest(ModelState);
+        }
+
+        var existingUser = await _authService.ValidateUserRegistration(model);
+        if (existingUser != null) 
+        {
+          _logger.LogWarning("User already exists with this email: {Email}", model.Email);
+          return BadRequest("User already exists");
+        }
+
+        var newUser = await _authService.RegisterUser(model);
+        if (newUser != null) 
+        {
+          _logger.LogWarning("Failed to create new user with this email: {Email}", model.Email);
+          return BadRequest("Failed to create new user");
+        }
+
+        return Ok();
+      } catch (Exception ex) 
+      {
+        _logger.LogError(ex, "Register error for user: {Email}", model.Email);
+        return StatusCode(500, "Internal server error");
+      }
+    }
+
     [HttpPost("Login")]
     public async Task<ActionResult<UserLoginResponseDto>> Login(UserLoginDto model)
     {
       try 
       {
+        if (!ModelState.IsValid)
+          return BadRequest(ModelState);
+
         var user = await _authService.ValidateUserLogin(model);
         if (user == null) 
         {
@@ -78,7 +114,7 @@ namespace CloudVideoStreamer.Api.Controllers
     {
       try 
       {
-        var user = await _authService.ValidateUserLogin(id);
+        var user = await _authService.GetUser(id);
         if (user == null) {
           _logger.LogWarning("Invalid credentials for user ID: {Id}", id);
           return Unauthorized("Invalid credentials");
