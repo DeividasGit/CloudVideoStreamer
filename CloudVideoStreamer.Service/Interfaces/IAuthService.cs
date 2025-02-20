@@ -7,11 +7,17 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CloudVideoStreamer.Service.Interfaces {
-  public interface IAuthService 
+namespace CloudVideoStreamer.Service.Interfaces
+{
+  public interface IAuthService
   {
-    string GenerateAccessToken(User user);
+    string GenerateAccessToken(User user, TimeSpan expiration);
     string GenerateRefreshToken();
-    Task<User> GetUser(UserLoginDto model);
+    Task<User> ValidateUserLogin(UserLoginDto model);
+    Task<User> ValidateUserLogin(int userid);
+    Task<RefreshToken> ValidateRefreshToken(string refreshToken, int userid, TimeSpan inactivePeriod);
+    Task AddRefreshToken(string refreshToken, User user, TimeSpan expiration);
+    Task UpdateRefreshToken(RefreshToken refreshToken, string newRefreshToken, TimeSpan expiration);
+    Task RevokeRefreshToken(RefreshToken refreshToken);
   }
 }
