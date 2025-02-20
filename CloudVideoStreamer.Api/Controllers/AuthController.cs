@@ -26,7 +26,7 @@ namespace CloudVideoStreamer.Api.Controllers
     }
 
     [HttpPost("Register")]
-    public async Task<ActionResult> Register(UserRegisterDto model) {
+    public async Task<ActionResult<UserLoginResponseDto>> Register(UserRegisterDto model) {
       try
       {
         if (!ModelState.IsValid)
@@ -49,7 +49,29 @@ namespace CloudVideoStreamer.Api.Controllers
           return BadRequest("Failed to create new user");
         }
 
-        return Ok();
+        var token = _authService.GenerateAccessToken(newUser, _jwtSettings.Value.AccessTokenExpiration);
+        if (token == string.Empty) {
+          _logger.LogError("Could not generate access token for user: {Email}", model.Email);
+          return BadRequest("Could not generate access token");
+        }
+
+        var refreshToken = _authService.GenerateRefreshToken();
+        if (refreshToken == string.Empty) {
+          _logger.LogError("Could not generate refresh token for user: {Email}", model.Email);
+          return BadRequest("Could not generate refresh token");
+        }
+
+        await _authService.AddRefreshToken(refreshToken, newUser, _jwtSettings.Value.RefreshTokenExpiration);
+
+        SetRefreshTokenCookie(refreshToken);
+
+        var response = new UserLoginResponseDto() {
+          Id = newUser.Id,
+          Name = newUser.Name,
+          Token = token
+        };
+
+        return Ok(response);
       } catch (Exception ex) 
       {
         _logger.LogError(ex, "Register error for user: {Email}", model.Email);
