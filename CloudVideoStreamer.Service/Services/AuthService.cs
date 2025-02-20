@@ -81,7 +81,7 @@ namespace CloudVideoStreamer.Service.Services
       return user;
     }
 
-    public async Task<RefreshToken> ValidateRefreshToken(string refreshToken, int userid) {
+    public async Task<RefreshToken> ValidateRefreshToken(string refreshToken, int userid, TimeSpan inactivePeriod) {
       var token = await _unitOfWork.Repository<RefreshToken, int>()
         .GetAllTrackable()
         .Where(x => x.Token == refreshToken && x.UserId == userid && !x.IsRevoked)
@@ -91,6 +91,9 @@ namespace CloudVideoStreamer.Service.Services
 
       if (token.ExpirationDate >= DateTime.UtcNow)
         throw new SecurityTokenException("Refresh token expired");
+
+      if(token.LastUsed.Add(inactivePeriod) <= DateTime.UtcNow)
+        throw new SecurityTokenException("Refresh token expired due to inactivity");
 
       await RevokeToken(token);
 
