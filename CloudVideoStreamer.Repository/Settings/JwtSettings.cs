@@ -9,5 +9,6 @@ namespace CloudVideoStreamer.Repository.Settings {
   {
     public TimeSpan AccessTokenExpiration { get; set; }
     public TimeSpan RefreshTokenExpiration { get; set; }
+    public TimeSpan RefreshTokenInactivity { get; set; }
   }
 }

@@ -16,7 +16,7 @@ namespace CloudVideoStreamer.Repository.Configurations {
 
       builder.Property(x => x.Token).IsRequired(true).HasMaxLength(500);
       builder.Property(x => x.IsRevoked).HasDefaultValue(false);
-      builder.Property(x => x.LastUsed).IsRequired(true).HasDefaultValue(DateTime.UtcNow);
+      builder.Property(x => x.LastUsed).IsRequired(true).HasDefaultValueSql("CURRENT_TIMESTAMP");
 
       builder
         .HasOne(x => x.User)

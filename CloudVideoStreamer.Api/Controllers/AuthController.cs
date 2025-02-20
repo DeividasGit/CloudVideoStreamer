@@ -68,7 +68,7 @@ namespace CloudVideoStreamer.Api.Controllers
       if (refreshToken == string.Empty)
         Unauthorized("Refresh token not found");
 
-      var refreshTokenObj = await _authService.ValidateRefreshToken(refreshToken, id);
+      var refreshTokenObj = await _authService.ValidateRefreshToken(refreshToken, id, _jwtSettings.Value.RefreshTokenInactivity);
       if (refreshTokenObj == null)
         NotFound("Refresh token not found");
 
@@ -106,7 +106,7 @@ namespace CloudVideoStreamer.Api.Controllers
       if (refreshToken == string.Empty)
         Unauthorized("Refresh token not found");
 
-      var refreshTokenObj = await _authService.ValidateRefreshToken(refreshToken, id);
+      var refreshTokenObj = await _authService.ValidateRefreshToken(refreshToken, id, _jwtSettings.Value.RefreshTokenInactivity);
       if (refreshTokenObj == null)
         Unauthorized("Refresh token not found");
 
