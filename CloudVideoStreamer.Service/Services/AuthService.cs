@@ -108,7 +108,8 @@ namespace CloudVideoStreamer.Service.Services
         ExpirationDate = DateTime.UtcNow.Add(expiration),
         IsRevoked = false,
         UserId = user.Id,
-        User = user
+        User = user,
+        LastUsed = DateTime.UtcNow
       });
 
       await _unitOfWork.SaveChangesAsync();
@@ -118,6 +119,7 @@ namespace CloudVideoStreamer.Service.Services
     {
       refreshToken.Token = newRefreshToken;
       refreshToken.ExpirationDate = DateTime.UtcNow.Add(expiration);
+      refreshToken.LastUsed = DateTime.UtcNow;
 
       _unitOfWork.Repository<RefreshToken, int>().Update(refreshToken);
 
@@ -127,6 +129,7 @@ namespace CloudVideoStreamer.Service.Services
     public async Task RevokeRefreshToken(RefreshToken refreshToken) 
     {
       refreshToken.IsRevoked = true;
+      refreshToken.LastUsed = DateTime.UtcNow;
 
       _unitOfWork.Repository<RefreshToken, int>().Update(refreshToken);
 
