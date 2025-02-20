@@ -31,7 +31,7 @@ namespace CloudVideoStreamer.Api.Controllers
       {
         if (!ModelState.IsValid)
         {
-          _logger.LogWarning("Model not valid");
+          _logger.LogWarning("Email or password not valid");
           return BadRequest(ModelState);
         }
 
@@ -43,7 +43,7 @@ namespace CloudVideoStreamer.Api.Controllers
         }
 
         var newUser = await _authService.RegisterUser(model);
-        if (newUser != null) 
+        if (newUser == null) 
         {
           _logger.LogWarning("Failed to create new user with this email: {Email}", model.Email);
           return BadRequest("Failed to create new user");
@@ -62,9 +62,12 @@ namespace CloudVideoStreamer.Api.Controllers
     {
       try 
       {
-        if (!ModelState.IsValid)
+        if (!ModelState.IsValid) 
+        {
+          _logger.LogWarning("Email or password not valid");
           return BadRequest(ModelState);
-
+        }
+          
         var user = await _authService.ValidateUserLogin(model);
         if (user == null) 
         {

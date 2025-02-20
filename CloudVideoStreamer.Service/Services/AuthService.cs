@@ -74,26 +74,27 @@ namespace CloudVideoStreamer.Service.Services
       return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
     }
 
+    public async Task<RefreshToken> ValidateRefreshToken(string refreshToken, int userid, TimeSpan inactivePeriod) {
+      var token = await _unitOfWork.Repository<RefreshToken, int>()
+        .GetAllTrackable()
+        .Where(x => x.Token == refreshToken && x.UserId == userid && !x.IsRevoked)
+        .FirstOrDefaultAsync();
+      if (token == null)
+        throw new SecurityTokenException("Refresh token not found");
+
+      if (token.ExpirationDate <= DateTime.UtcNow)
+        throw new SecurityTokenException("Refresh token expired");
+
+      if (token.LastUsed.Add(inactivePeriod) <= DateTime.UtcNow)
+        throw new SecurityTokenException("Refresh token expired due to inactivity");
+
+      await RevokeRefreshToken(token);
+
+      return token;
+    }
+
     public async Task<User> ValidateUserRegistration(UserRegisterDto model) 
     {
-
-      //var passwordValidator = new PasswordValidator<User>();
-
-      var newUser = new User() {
-        Name = model.Name,
-        Email = model.Email,
-        Password = model.Password
-      };
-
-      //var result = await passwordValidator.ValidateAsync(null, newUser, newUser.Password);
-      //if (!result.Succeeded) 
-      //{
-      //  foreach (var error in result.Errors) {
-      //    _logger.LogError(error.Description);
-      //    throw new ValidationException(error.Description);
-      //  }
-      //}
-
       var existingUser = await _userService.Get(model);
 
       return existingUser;
@@ -134,25 +135,6 @@ namespace CloudVideoStreamer.Service.Services
       var user = await _userService.Get(userid);
 
       return user;
-    }
-
-    public async Task<RefreshToken> ValidateRefreshToken(string refreshToken, int userid, TimeSpan inactivePeriod) {
-      var token = await _unitOfWork.Repository<RefreshToken, int>()
-        .GetAllTrackable()
-        .Where(x => x.Token == refreshToken && x.UserId == userid && !x.IsRevoked)
-        .FirstOrDefaultAsync();
-      if (token == null)
-        throw new SecurityTokenException("Refresh token not found");
-
-      if (token.ExpirationDate <= DateTime.UtcNow)
-        throw new SecurityTokenException("Refresh token expired");
-
-      if(token.LastUsed.Add(inactivePeriod) <= DateTime.UtcNow)
-        throw new SecurityTokenException("Refresh token expired due to inactivity");
-
-      await RevokeRefreshToken(token);
-
-      return token;
     }
 
     public async Task AddRefreshToken(string refreshToken, User user, TimeSpan expiration)
