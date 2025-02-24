@@ -243,6 +243,18 @@ namespace CloudVideoStreamer.Service.Services
 
     public async Task AddRefreshToken(string refreshToken, User user, TimeSpan expiration)
     {
+      var oldTokens = await _unitOfWork.Repository<RefreshToken, int>()
+        .GetAllTrackable()
+        .Where(x => x.UserId == user.Id)
+        .ToListAsync();
+
+      foreach (var token in oldTokens) 
+      {
+        token.IsRevoked = true;
+      }
+
+      await _unitOfWork.SaveChangesAsync();
+
       _unitOfWork.Repository<RefreshToken, int>().Add(new RefreshToken()
       {
         Token = refreshToken,
