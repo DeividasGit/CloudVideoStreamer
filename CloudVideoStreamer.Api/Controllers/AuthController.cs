@@ -6,7 +6,9 @@ using CloudVideoStreamer.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Linq;
+using System.ComponentModel.DataAnnotations;
 
 namespace CloudVideoStreamer.Api.Controllers
 {
@@ -35,44 +37,30 @@ namespace CloudVideoStreamer.Api.Controllers
           return BadRequest(ModelState);
         }
 
-        var existingUser = await _authService.ValidateUserRegistration(model);
-        if (existingUser != null) 
-        {
-          _logger.LogWarning("User already exists with this email: {Email}", model.Email);
-          return BadRequest("User already exists");
-        }
+        var response = await _authService
+          .RegisterUser(model, 
+                        _jwtSettings.Value.AccessTokenExpiration,
+                        _jwtSettings.Value.RefreshTokenExpiration);
+        if (response == null) 
+          return BadRequest("Failed to register");
+        
+        SetRefreshTokenCookie(response.RefreshToken);
 
-        var newUser = await _authService.RegisterUser(model);
-        if (newUser == null) 
-        {
-          _logger.LogWarning("Failed to create new user with this email: {Email}", model.Email);
-          return BadRequest("Failed to create new user");
-        }
-
-        var token = _authService.GenerateAccessToken(newUser, _jwtSettings.Value.AccessTokenExpiration);
-        if (token == string.Empty) {
-          _logger.LogError("Could not generate access token for user: {Email}", model.Email);
-          return BadRequest("Could not generate access token");
-        }
-
-        var refreshToken = _authService.GenerateRefreshToken();
-        if (refreshToken == string.Empty) {
-          _logger.LogError("Could not generate refresh token for user: {Email}", model.Email);
-          return BadRequest("Could not generate refresh token");
-        }
-
-        await _authService.AddRefreshToken(refreshToken, newUser, _jwtSettings.Value.RefreshTokenExpiration);
-
-        SetRefreshTokenCookie(refreshToken);
-
-        var response = new UserLoginResponseDto() {
-          Id = newUser.Id,
-          Name = newUser.Name,
-          Token = token
-        };
-
-        return Ok(response);
-      } catch (Exception ex) 
+        return Ok(new UserLoginResponseDto() {
+          Id = response.Id,
+          Name = response.Name,
+          Token = response.AccessToken
+        });       
+      } 
+      catch (ValidationException ex) 
+      {
+        return Unauthorized(ex.Message);
+      } 
+      catch (SecurityTokenException ex) 
+      {
+        return BadRequest(ex.Message);
+      } 
+      catch (Exception ex) 
       {
         _logger.LogError(ex, "Register error for user: {Email}", model.Email);
         return StatusCode(500, "Internal server error");
@@ -89,40 +77,31 @@ namespace CloudVideoStreamer.Api.Controllers
           _logger.LogWarning("Email or password not valid");
           return BadRequest(ModelState);
         }
-          
-        var user = await _authService.ValidateUserLogin(model);
-        if (user == null) 
-        {
-          _logger.LogWarning("Invalid credentials for user: {Email}", model.Email);
-          return Unauthorized("Invalid credentials");
-        }
 
-        var token = _authService.GenerateAccessToken(user, _jwtSettings.Value.AccessTokenExpiration);
-        if (token == string.Empty) 
-        {
-          _logger.LogError("Could not generate access token for user: {Email}", model.Email);
-          return BadRequest("Could not generate access token");
-        }
+        var response = await _authService
+          .LoginUser(model,
+                     _jwtSettings.Value.AccessTokenExpiration,
+                     _jwtSettings.Value.RefreshTokenExpiration);
+        if (response == null)
+          return BadRequest("Failed to log in");
 
-        var refreshToken = _authService.GenerateRefreshToken();
-        if (refreshToken == string.Empty)
-        {
-          _logger.LogError("Could not generate refresh token for user: {Email}", model.Email);
-          return BadRequest("Could not generate refresh token");
-        }
+        SetRefreshTokenCookie(response.RefreshToken);
 
-        await _authService.AddRefreshToken(refreshToken, user, _jwtSettings.Value.RefreshTokenExpiration);
-
-        SetRefreshTokenCookie(refreshToken);
-
-        var response = new UserLoginResponseDto() {
-          Id = user.Id,
-          Name = user.Name,
-          Token = token
-        };
-
-        return Ok(response);
-      } catch (Exception ex) 
+        return Ok(new UserLoginResponseDto() {
+          Id = response.Id,
+          Name = response.Name,
+          Token = response.AccessToken
+        });
+      } 
+      catch (ValidationException ex) 
+      {
+        return Unauthorized(ex.Message);
+      } 
+      catch (SecurityTokenException ex) 
+      {
+        return BadRequest(ex.Message);
+      } 
+      catch (Exception ex) 
       {
         _logger.LogError(ex, "An error occurred during login for user: {Email}", model.Email);
         return StatusCode(500, "Internal server error");
@@ -133,49 +112,38 @@ namespace CloudVideoStreamer.Api.Controllers
     public async Task<ActionResult<UserLoginResponseDto>> RefreshToken(int id)
     {
       try 
-      {
-        var user = await _authService.GetUser(id);
-        if (user == null) {
-          _logger.LogWarning("Invalid credentials for user ID: {Id}", id);
-          return Unauthorized("Invalid credentials");
-        }
-
+      {    
         var refreshToken = Request.Cookies["refresh_token"];
         if (refreshToken == string.Empty) {
           _logger.LogWarning("Refresh token not found for user ID: {UserId}", id);
           return Unauthorized("Refresh token not found");
         }
 
-        var refreshTokenObj = await _authService.ValidateRefreshToken(refreshToken, id, _jwtSettings.Value.RefreshTokenInactivity);
-        if (refreshTokenObj == null) {
-          _logger.LogWarning("Invalid refresh token for user ID: {UserId}", id);
-          return NotFound("Refresh token not found");
-        }
+        var response = await _authService
+             .RefreshTokenUser(id, refreshToken,
+             _jwtSettings.Value.AccessTokenExpiration,
+             _jwtSettings.Value.RefreshTokenExpiration,
+             _jwtSettings.Value.RefreshTokenInactivity);
+        if (response == null)
+          return BadRequest("Failed to log in");
 
-        var newtoken = _authService.GenerateAccessToken(user, _jwtSettings.Value.AccessTokenExpiration);
-        if (newtoken == string.Empty) {
-          _logger.LogError("Failed to generate new access token for user ID: {UserId}", id);
-          return BadRequest("Could not generate new access token");
-        }
+        SetRefreshTokenCookie(response.RefreshToken);
 
-        var newRefreshToken = _authService.GenerateRefreshToken();
-        if (newRefreshToken == string.Empty) {
-          _logger.LogError("Failed to generate new refresh token for user ID: {UserId}", id);
-          return BadRequest("Could not generate new refresh token");
-        }
-
-        await _authService.UpdateRefreshToken(refreshTokenObj, newRefreshToken, _jwtSettings.Value.RefreshTokenExpiration);
-
-        SetRefreshTokenCookie(newRefreshToken);
-
-        var response = new UserLoginResponseDto() {
-          Id = user.Id,
-          Name = user.Name,
-          Token = newtoken
-        };
-
-        return Ok(response);
-      } catch (Exception ex) 
+        return Ok(new UserLoginResponseDto() {
+          Id = response.Id,
+          Name = response.Name,
+          Token = response.AccessToken
+        });
+      } 
+      catch (ValidationException ex) 
+      {
+        return Unauthorized(ex.Message);
+      } 
+      catch (SecurityTokenException ex) 
+      {
+        return BadRequest(ex.Message);
+      }
+      catch (Exception ex) 
       {
         _logger.LogError(ex, "An error occurred while refreshing token for user ID: {UserId}", id);
         return StatusCode(500, "Internal server error");
@@ -194,17 +162,16 @@ namespace CloudVideoStreamer.Api.Controllers
           return Unauthorized("Refresh token not found");
         }
 
-        var refreshTokenObj = await _authService.ValidateRefreshToken(refreshToken, id, _jwtSettings.Value.RefreshTokenInactivity);
-        if (refreshTokenObj == null) 
-        {
-          _logger.LogWarning("Refresh token not found for user ID: {Id}", id);
-          return Unauthorized("Refresh token not found");
-        }
-
-        await _authService.RevokeRefreshToken(refreshTokenObj);
+        await _authService.LogoutUser(id, refreshToken, 
+                                      _jwtSettings.Value.RefreshTokenInactivity);
 
         return Ok();
-      } catch (Exception ex) 
+      } 
+      catch (ValidationException ex) 
+      {
+        return Unauthorized(ex.Message);
+      } 
+      catch (Exception ex) 
       {
         _logger.LogError(ex, "An error occurred while loging out user ID: {UserId}", id);
         return StatusCode(500, "Internal server error");
@@ -219,5 +186,6 @@ namespace CloudVideoStreamer.Api.Controllers
         Expires = DateTimeOffset.UtcNow.Add(_jwtSettings.Value.RefreshTokenExpiration)
       });
     }
+
   }
 }
