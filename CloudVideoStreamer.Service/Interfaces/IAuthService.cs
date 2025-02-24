@@ -13,8 +13,17 @@ namespace CloudVideoStreamer.Service.Interfaces
   {
     string GenerateAccessToken(User user, TimeSpan expiration);
     string GenerateRefreshToken();
+    Task<UserAuthResponseDto> RegisterUser(UserRegisterDto model, TimeSpan accessTokenExpiration,
+                                           TimeSpan refreshTokenExpiration);
+    Task<UserAuthResponseDto> LoginUser(UserLoginDto model, TimeSpan accessTokenExpiration,
+                                        TimeSpan refreshTokenExpiration);
+    Task<UserAuthResponseDto> RefreshTokenUser(int userId, string refreshToken, 
+                                               TimeSpan accessTokenExpiration,
+                                               TimeSpan refreshTokenExpiration,
+                                               TimeSpan refreshTokenInactivity);
+    Task LogoutUser(int userId, string refreshToken, TimeSpan refreshTokenInactivity);
+    Task ValidateUserRegistration(UserRegisterDto model);
     Task<User> ValidateUserLogin(UserLoginDto model);
-    Task<User> ValidateUserLogin(int userid);
     Task<RefreshToken> ValidateRefreshToken(string refreshToken, int userid, TimeSpan inactivePeriod);
     Task AddRefreshToken(string refreshToken, User user, TimeSpan expiration);
     Task UpdateRefreshToken(RefreshToken refreshToken, string newRefreshToken, TimeSpan expiration);
