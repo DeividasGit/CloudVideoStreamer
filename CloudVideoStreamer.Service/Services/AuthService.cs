@@ -51,7 +51,8 @@ namespace CloudVideoStreamer.Service.Services
           new Claim[]
           {
             new Claim(ClaimTypes.Name, user.Name),
-            new Claim(ClaimTypes.Email, user.Email)
+            new Claim(ClaimTypes.Email, user.Email),
+            new Claim(ClaimTypes.Role, user.Role.Name)
           }),
         Expires = DateTime.UtcNow.Add(expiration),
         SigningCredentials = new SigningCredentials(
@@ -104,6 +105,7 @@ namespace CloudVideoStreamer.Service.Services
       return new UserAuthResponseDto() {
         Id = newUser.Id,
         Name = newUser.Name,
+        RoleName = newUser.Role.Name,
         AccessToken = token,
         RefreshToken = refreshToken
       };
@@ -133,6 +135,7 @@ namespace CloudVideoStreamer.Service.Services
       return new UserAuthResponseDto() {
         Id = user.Id,
         Name = user.Name,
+        RoleName = user.Role.Name,
         AccessToken = token,
         RefreshToken = refreshToken
       };
@@ -169,6 +172,7 @@ namespace CloudVideoStreamer.Service.Services
       return new UserAuthResponseDto() {
         Id = user.Id,
         Name = user.Name,
+        RoleName = user.Role.Name,
         AccessToken = newtoken,
         RefreshToken = refreshToken
       };

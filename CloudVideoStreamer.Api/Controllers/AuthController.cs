@@ -49,6 +49,7 @@ namespace CloudVideoStreamer.Api.Controllers
         return Ok(new UserLoginResponseDto() {
           Id = response.Id,
           Name = response.Name,
+          RoleName = response.RoleName,
           Token = response.AccessToken
         });       
       } 
@@ -90,6 +91,7 @@ namespace CloudVideoStreamer.Api.Controllers
         return Ok(new UserLoginResponseDto() {
           Id = response.Id,
           Name = response.Name,
+          RoleName = response.RoleName,
           Token = response.AccessToken
         });
       } 
@@ -132,6 +134,7 @@ namespace CloudVideoStreamer.Api.Controllers
         return Ok(new UserLoginResponseDto() {
           Id = response.Id,
           Name = response.Name,
+          RoleName = response.RoleName,
           Token = response.AccessToken
         });
       } 
