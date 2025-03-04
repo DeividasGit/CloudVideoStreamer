@@ -15,7 +15,10 @@ namespace CloudVideoStreamer.Repository.Configurations
     {
       builder.HasKey(x => x.Id);
 
-      builder.Property(x => x.Name).IsRequired(true).HasMaxLength(100);
+      builder.Property(x => x.Name)
+        .IsRequired()
+        .HasMaxLength(100)
+        .HasDefaultValue("User");
     }
   }
 }
