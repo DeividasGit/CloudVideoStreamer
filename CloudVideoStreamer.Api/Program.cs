@@ -32,6 +32,7 @@ builder.Services.AddScoped<IMovieService, MovieService>();
 builder.Services.AddScoped<IMediaContentService, MediaContentService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IRoleService, RoleService>();
 
 builder.Services.AddCors(options =>
   options.AddDefaultPolicy(policy =>
