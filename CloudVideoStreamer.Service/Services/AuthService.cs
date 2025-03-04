@@ -27,14 +27,16 @@ namespace CloudVideoStreamer.Service.Services
     private readonly IUnitOfWork _unitOfWork;
     private readonly IUserService _userService;
     private readonly ILogger<AuthService> _logger;
+    private readonly IRoleService _roleService;
 
     public AuthService(IConfiguration configuration, IUnitOfWork unitOfWork, IUserService userService, 
-      ILogger<AuthService> logger)
+      ILogger<AuthService> logger, IRoleService roleService)
     {
       _configuration = configuration;
       _unitOfWork = unitOfWork;
       _userService = userService;
       _logger = logger;
+      _roleService = roleService;
     }
 
     public string GenerateAccessToken(User user, TimeSpan expiration)
@@ -80,9 +82,13 @@ namespace CloudVideoStreamer.Service.Services
 
       var passwordHasher = new PasswordHasher<User>();
 
+      var userRole = await _roleService.Get("User");
+
       var newUser = new User() {
         Name = model.Name,
         Email = model.Email,
+        Role = userRole,
+        RoleId = userRole.Id,
         Password = passwordHasher.HashPassword(null, model.Password)
       };
 

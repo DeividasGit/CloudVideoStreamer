@@ -10,5 +10,6 @@ namespace CloudVideoStreamer.Service.Interfaces
 {
   public interface IRoleService : IBaseService<Role, int>
   {
+    Task<Role> Get(string name);
   }
 }

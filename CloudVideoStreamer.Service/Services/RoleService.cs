@@ -3,6 +3,7 @@ using CloudVideoStreamer.Repository.Models;
 using CloudVideoStreamer.Service.Interfaces;
 using CloudVideoStreamer.Service.Interfaces.Base;
 using CloudVideoStreamer.Service.Services.Base;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,16 @@ namespace CloudVideoStreamer.Service.Services
     public RoleService(IUnitOfWork unitOfWork) : base(unitOfWork)
     {
       _unitOfWork = unitOfWork;
+    }
+
+    public async Task<Role> Get(string name)
+    {
+      var role = await _unitOfWork.Repository<Role, int>()
+        .GetAllTrackable()
+        .Where(x => x.Name == name)
+        .FirstOrDefaultAsync();
+
+      return role;
     }
   }
 }
