@@ -11,4 +11,5 @@ public class MediaContent : IBaseEntity<int>
   public decimal Rating { get; set; }
   public ICollection<Movie> Movies { get; set; }
   public ICollection<TvSeries> TvSeries { get; set; }
+  public ICollection<MediaContentGenre> Genres { get; set; }
 }
