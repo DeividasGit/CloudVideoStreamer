@@ -26,6 +26,7 @@ public class AppDbContext : DbContext
     modelBuilder.ApplyConfiguration(new MovieConfiguration());
     modelBuilder.ApplyConfiguration(new TvSeriesConfiguration());
     modelBuilder.ApplyConfiguration(new RefreshTokenConfiguration());
+    modelBuilder.ApplyConfiguration(new RoleConfiguration());
 
     base.OnModelCreating(modelBuilder);
   }
