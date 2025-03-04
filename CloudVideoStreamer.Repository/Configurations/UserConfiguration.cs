@@ -19,5 +19,12 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
     builder.Property(x => x.Name).IsRequired().HasMaxLength(100);
     builder.Property(x => x.Email).IsRequired().HasMaxLength(100);
     builder.Property(x => x.Password).IsRequired().HasMaxLength(500);
+
+    builder
+      .HasOne(x => x.Role)
+      .WithMany(x => x.Users)
+      .HasForeignKey(x => x.RoleId)
+      .IsRequired(true)
+      .OnDelete(DeleteBehavior.Restrict);
   }
 }
