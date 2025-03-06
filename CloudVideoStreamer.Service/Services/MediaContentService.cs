@@ -1,8 +1,10 @@
 ﻿using CloudVideoStreamer.Repository.DTOs.MediaContent;
+using CloudVideoStreamer.Repository.DTOs.Paging;
 using CloudVideoStreamer.Repository.Interfaces;
 using CloudVideoStreamer.Repository.Models;
 using CloudVideoStreamer.Service.Interfaces;
 using CloudVideoStreamer.Service.Services.Base;
+using CloudVideoStreamer.Service.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
@@ -24,7 +26,7 @@ namespace CloudVideoStreamer.Service.Services
       _logger = logger;
     }
 
-    public async Task<List<MediaContentDto>> GetFiltered(MediaContentFilterDto filter)
+    public async Task<List<MediaContentDto>> GetFiltered(string sorting, PagingDto paging, MediaContentFilterDto filter)
     {
       try
       {
@@ -74,6 +76,12 @@ namespace CloudVideoStreamer.Service.Services
         if (filter.Genres != null)
           query = query.Where(x =>
           x.Genres.Any(x => filter.Genres.Contains(x.Genre.Name)));
+
+        if(sorting != "")
+          query = query.Sort(sorting);
+
+        if(paging != null)
+          query = query.ApplyPaging(paging);
         
         var result = await query.Select(x => new MediaContentDto()
         {

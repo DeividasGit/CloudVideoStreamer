@@ -1,4 +1,5 @@
 ﻿using CloudVideoStreamer.Repository.DTOs.MediaContent;
+using CloudVideoStreamer.Repository.DTOs.Paging;
 using CloudVideoStreamer.Repository.Models;
 using CloudVideoStreamer.Service.Interfaces.Base;
 using System;
@@ -10,6 +11,6 @@ using System.Threading.Tasks;
 namespace CloudVideoStreamer.Service.Interfaces {
   public interface IMediaContentService : IBaseService<MediaContent, int>
   {
-    Task<List<MediaContentDto>> GetFiltered(MediaContentFilterDto model);
+    Task<List<MediaContentDto>> GetFiltered(string sorting, PagingDto paging, MediaContentFilterDto model);
   }
 }
