@@ -1,4 +1,4 @@
-﻿using CloudVideoStreamer.Repository.DTOs;
+﻿using CloudVideoStreamer.Repository.DTOs.Movie;
 using CloudVideoStreamer.Repository.Models;
 using CloudVideoStreamer.Service.Interfaces.Base;
 
