@@ -4,6 +4,7 @@ using CloudVideoStreamer.Repository.Models;
 using CloudVideoStreamer.Service.Interfaces;
 using CloudVideoStreamer.Service.Services.Base;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,71 +15,78 @@ namespace CloudVideoStreamer.Service.Services {
   public class MediaContentService : BaseService<MediaContent, int>, IMediaContentService {
 
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ILogger<MediaContentService> _logger;
 
-    public MediaContentService(IUnitOfWork unitOfWork) : base(unitOfWork) 
+    public MediaContentService(IUnitOfWork unitOfWork, ILogger<MediaContentService> logger) : base(unitOfWork) 
     {
       _unitOfWork = unitOfWork;
+      _logger = logger;
     }
 
     public async Task<List<MediaContentDto>> GetFiltered(MediaContentFilterDto filter)
     {
-      var query = _unitOfWork.Repository<MediaContent, int>()
-        .GetAll();
-
-      if(filter.FilterMovies)
-        query = query.Include(x => x.Movies);
-
-      if(filter.FilterTvSeries)
-        query = query.Include(x=> x.TvSeries);
-
-      if (!string.IsNullOrEmpty(filter.Title))
-        query = query.Where(x => x.Title.Contains(filter.Title));
-
-      if(filter.ReleaseDateFrom.HasValue)
-        query = query.Where(x => x.ReleaseDate.CompareTo(filter.ReleaseDateFrom) > 0);
-
-      if(filter.ReleaseDateTo.HasValue)
-        query = query.Where(x => x.ReleaseDate.CompareTo(filter.ReleaseDateTo) < 0);
-
-      if(filter.RatingFrom.HasValue)
-        query = query.Where(x => x.Rating.CompareTo(filter.RatingFrom) > 0);
-
-      if(filter.RatingTo.HasValue)
-        query = query.Where(x => x.Rating.CompareTo(filter.RatingTo) < 0);
-
-      if (filter.DurationInSecondsFrom.HasValue)
-        query = query.Where(x => 
-        x.Movies.Any(x => x.DurationInSeconds.CompareTo(filter.DurationInSecondsFrom) > 0));
-
-      if (filter.DurationInSecondsTo.HasValue)
-        query = query.Where(x =>
-        x.Movies.Any(x => x.DurationInSeconds.CompareTo(filter.DurationInSecondsTo) < 0));
-
-      if(filter.SeasonCountFrom.HasValue)
-        query = query.Where(x =>
-        x.TvSeries.Any(x => x.SeasonCount.CompareTo(filter.SeasonCountFrom) > 0));
-
-      if (filter.SeasonCountTo.HasValue)
-        query = query.Where(x =>
-        x.TvSeries.Any(x => x.SeasonCount.CompareTo(filter.SeasonCountTo) < 0));
-
-      if (filter.Genres != null)
+      try
       {
-        var genreNames = filter.Genres.Select(x => x.Name).ToList();
+        var query = _unitOfWork.Repository<MediaContent, int>()
+        .GetAll()
+        .AsNoTracking();
+        
+        if (filter.FilterMovies)
+          query = query.Include(x => x.Movies);
 
-        query = query.Where(x =>
-        x.Genres.Any(x => genreNames.Contains(x.Genre.Name)));
+        if (filter.FilterTvSeries)
+          query = query.Include(x => x.TvSeries);
+
+        if (!string.IsNullOrEmpty(filter.Title))
+          query = query.Where(x => x.Title.Contains(filter.Title));
+
+        if (filter.ReleaseDateFrom.HasValue)
+          query = query.Where(x => x.ReleaseDate >= filter.ReleaseDateFrom);
+
+        if (filter.ReleaseDateTo.HasValue)
+          query = query.Where(x => x.ReleaseDate <= filter.ReleaseDateTo);
+
+        if (filter.RatingFrom.HasValue)
+          query = query.Where(x => x.Rating >= filter.RatingFrom);
+
+        if (filter.RatingTo.HasValue)
+          query = query.Where(x => x.Rating <= filter.RatingTo);
+
+        if (filter.DurationInSecondsFrom.HasValue)
+          query = query.Where(x =>
+          x.Movies.Any(x => x.DurationInSeconds >= filter.DurationInSecondsFrom));
+
+        if (filter.DurationInSecondsTo.HasValue)
+          query = query.Where(x =>
+          x.Movies.Any(x => x.DurationInSeconds <= filter.DurationInSecondsTo));
+
+        if (filter.SeasonCountFrom.HasValue)
+          query = query.Where(x =>
+          x.TvSeries.Any(x => x.SeasonCount >= filter.SeasonCountFrom));
+
+        if (filter.SeasonCountTo.HasValue)
+          query = query.Where(x =>
+          x.TvSeries.Any(x => x.SeasonCount <= filter.SeasonCountTo));
+
+        if (filter.Genres != null)
+          query = query.Where(x =>
+          x.Genres.Any(x => filter.Genres.Contains(x.Genre.Name)));
+        
+        var result = await query.Select(x => new MediaContentDto()
+        {
+          Title = x.Title,
+          Description = x.Description,
+          ReleaseDate = x.ReleaseDate,
+          Rating = x.Rating
+        }).ToListAsync();
+
+        return result;
       }
-
-      var result = await query.Select(x => new MediaContentDto()
+      catch (Exception ex)
       {
-        Title = x.Title,
-        Description = x.Description,
-        ReleaseDate = x.ReleaseDate,
-        Rating = x.Rating
-      }).ToListAsync();
-
-      return result;
+        _logger.LogError(ex.Message);
+        throw;
+      }
     }
   }
 }

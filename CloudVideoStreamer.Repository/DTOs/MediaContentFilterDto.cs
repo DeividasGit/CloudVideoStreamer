@@ -20,7 +20,7 @@ namespace CloudVideoStreamer.Repository.DTOs
     public decimal? DurationInSecondsTo { get; set; }
     public int? SeasonCountFrom { get; set; }
     public int? SeasonCountTo { get; set; }
-    public List<Genre>? Genres { get; set; }
+    public List<string>? Genres { get; set; }
 
   }
 }
