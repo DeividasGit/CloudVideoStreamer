@@ -29,13 +29,15 @@ namespace CloudVideoStreamer.Service.Services {
       {
         var query = _unitOfWork.Repository<MediaContent, int>()
         .GetAll()
+        .Include(x => x.Movies)
+        .Include(x => x.TvSeries)
         .AsNoTracking();
         
-        if (filter.FilterMovies)
-          query = query.Include(x => x.Movies);
+        if (!filter.FilterMovies)
+          query = query.Where(x => !x.Movies.Any());
 
-        if (filter.FilterTvSeries)
-          query = query.Include(x => x.TvSeries);
+        if (!filter.FilterTvSeries)
+          query = query.Where(x => !x.TvSeries.Any());
 
         if (!string.IsNullOrEmpty(filter.Title))
           query = query.Where(x => x.Title.Contains(filter.Title));
