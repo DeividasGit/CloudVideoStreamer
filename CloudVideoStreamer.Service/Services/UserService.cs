@@ -21,6 +21,17 @@ namespace CloudVideoStreamer.Service.Services
       _unitOfWork = unitOfWork;
     }
 
+    public override async Task<User> Get(int id)
+    {
+      var user = await _unitOfWork.Repository<User, int>()
+        .GetAllTrackable()
+        .Include(x => x.Role)
+        .Where(x => x.Id == id)
+        .FirstOrDefaultAsync();
+
+      return user;
+    }
+
     public async Task<User> Get(UserRegisterDto model) {
       var user = await _unitOfWork.Repository<User, int>()
         .GetAllTrackable()

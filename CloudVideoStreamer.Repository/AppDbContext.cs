@@ -27,6 +27,8 @@ public class AppDbContext : DbContext
     modelBuilder.ApplyConfiguration(new TvSeriesConfiguration());
     modelBuilder.ApplyConfiguration(new RefreshTokenConfiguration());
     modelBuilder.ApplyConfiguration(new RoleConfiguration());
+    modelBuilder.ApplyConfiguration(new GenreConfiguration());
+    modelBuilder.ApplyConfiguration(new MediaContentGenreConfiguration());
 
     base.OnModelCreating(modelBuilder);
   }
