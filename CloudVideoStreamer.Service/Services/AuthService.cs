@@ -1,5 +1,5 @@
 ﻿using Azure;
-using CloudVideoStreamer.Repository.DTOs;
+using CloudVideoStreamer.Repository.DTOs.Auth;
 using CloudVideoStreamer.Repository.Interfaces;
 using CloudVideoStreamer.Repository.Models;
 using CloudVideoStreamer.Repository.Settings;
@@ -21,22 +21,20 @@ using System.Threading.Tasks;
 
 namespace CloudVideoStreamer.Service.Services
 {
-  public class AuthService : IAuthService
+    public class AuthService : IAuthService
   {
     private readonly IConfiguration _configuration;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IUserService _userService;
     private readonly ILogger<AuthService> _logger;
-    private readonly IRoleService _roleService;
 
     public AuthService(IConfiguration configuration, IUnitOfWork unitOfWork, IUserService userService, 
-      ILogger<AuthService> logger, IRoleService roleService)
+      ILogger<AuthService> logger)
     {
       _configuration = configuration;
       _unitOfWork = unitOfWork;
       _userService = userService;
       _logger = logger;
-      _roleService = roleService;
     }
 
     public string GenerateAccessToken(User user, TimeSpan expiration)
@@ -53,8 +51,7 @@ namespace CloudVideoStreamer.Service.Services
           new Claim[]
           {
             new Claim(ClaimTypes.Name, user.Name),
-            new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.Role, user.Role.Name)
+            new Claim(ClaimTypes.Email, user.Email)
           }),
         Expires = DateTime.UtcNow.Add(expiration),
         SigningCredentials = new SigningCredentials(
@@ -82,13 +79,9 @@ namespace CloudVideoStreamer.Service.Services
 
       var passwordHasher = new PasswordHasher<User>();
 
-      var userRole = await _roleService.Get("User");
-
       var newUser = new User() {
         Name = model.Name,
         Email = model.Email,
-        Role = userRole,
-        RoleId = userRole.Id,
         Password = passwordHasher.HashPassword(null, model.Password)
       };
 
@@ -111,7 +104,6 @@ namespace CloudVideoStreamer.Service.Services
       return new UserAuthResponseDto() {
         Id = newUser.Id,
         Name = newUser.Name,
-        RoleName = newUser.Role.Name,
         AccessToken = token,
         RefreshToken = refreshToken
       };
@@ -141,7 +133,6 @@ namespace CloudVideoStreamer.Service.Services
       return new UserAuthResponseDto() {
         Id = user.Id,
         Name = user.Name,
-        RoleName = user.Role.Name,
         AccessToken = token,
         RefreshToken = refreshToken
       };
@@ -178,7 +169,6 @@ namespace CloudVideoStreamer.Service.Services
       return new UserAuthResponseDto() {
         Id = user.Id,
         Name = user.Name,
-        RoleName = user.Role.Name,
         AccessToken = newtoken,
         RefreshToken = refreshToken
       };

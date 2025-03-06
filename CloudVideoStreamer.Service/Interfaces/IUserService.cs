@@ -1,4 +1,4 @@
-﻿using CloudVideoStreamer.Repository.DTOs;
+﻿using CloudVideoStreamer.Repository.DTOs.Auth;
 using CloudVideoStreamer.Repository.Models;
 using CloudVideoStreamer.Service.Interfaces.Base;
 using System;
@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace CloudVideoStreamer.Service.Interfaces
 {
-  public interface IUserService : IBaseService<User, int>
+    public interface IUserService : IBaseService<User, int>
   {
     Task<User> Get(UserRegisterDto model);
     Task<User> Get(UserLoginDto model);

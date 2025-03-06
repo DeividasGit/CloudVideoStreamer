@@ -1,4 +1,4 @@
-﻿using CloudVideoStreamer.Repository.DTOs;
+﻿using CloudVideoStreamer.Repository.DTOs.MediaContent;
 using CloudVideoStreamer.Repository.Interfaces;
 using CloudVideoStreamer.Repository.Models;
 using CloudVideoStreamer.Service.Interfaces;
@@ -11,8 +11,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CloudVideoStreamer.Service.Services {
-  public class MediaContentService : BaseService<MediaContent, int>, IMediaContentService {
+namespace CloudVideoStreamer.Service.Services
+{
+    public class MediaContentService : BaseService<MediaContent, int>, IMediaContentService {
 
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<MediaContentService> _logger;

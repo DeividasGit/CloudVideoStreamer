@@ -1,4 +1,4 @@
-﻿using CloudVideoStreamer.Repository.DTOs;
+﻿using CloudVideoStreamer.Repository.DTOs.Auth;
 using CloudVideoStreamer.Repository.Migrations;
 using CloudVideoStreamer.Repository.Models;
 using CloudVideoStreamer.Repository.Settings;
@@ -12,7 +12,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CloudVideoStreamer.Api.Controllers
 {
-  [ApiController]
+    [ApiController]
   [Route("api/[controller]")]
   public class AuthController : Controller
   {
@@ -49,7 +49,6 @@ namespace CloudVideoStreamer.Api.Controllers
         return Ok(new UserLoginResponseDto() {
           Id = response.Id,
           Name = response.Name,
-          RoleName = response.RoleName,
           Token = response.AccessToken
         });       
       } 
@@ -91,7 +90,6 @@ namespace CloudVideoStreamer.Api.Controllers
         return Ok(new UserLoginResponseDto() {
           Id = response.Id,
           Name = response.Name,
-          RoleName = response.RoleName,
           Token = response.AccessToken
         });
       } 
@@ -134,7 +132,6 @@ namespace CloudVideoStreamer.Api.Controllers
         return Ok(new UserLoginResponseDto() {
           Id = response.Id,
           Name = response.Name,
-          RoleName = response.RoleName,
           Token = response.AccessToken
         });
       } 
