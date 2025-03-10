@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CloudVideoStreamer.Repository.DTOs.Paging;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace CloudVideoStreamer.Service.Helpers
 {
-  public static class SortingHelper
+  public static class QueryableHelper
   {
     public static IQueryable<T> Sort<T>(this IQueryable<T> query, string sortingColumns)
     {
@@ -41,6 +42,13 @@ namespace CloudVideoStreamer.Service.Helpers
         firstSort = false;
       }
       return query;
+    }
+
+    public static IQueryable<T> ApplyPaging<T>(this IQueryable<T> query, PagingDto paging)
+    {
+      if (paging == null) return query;
+
+      return query.Skip((paging.PageNumber - 1) * paging.PageSize).Take(paging.PageSize);
     }
   }
 }
