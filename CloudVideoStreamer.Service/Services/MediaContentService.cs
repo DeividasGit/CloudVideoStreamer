@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 
 namespace CloudVideoStreamer.Service.Services
 {
@@ -98,6 +99,20 @@ namespace CloudVideoStreamer.Service.Services
         _logger.LogError(ex.Message);
         throw;
       }
+    }
+
+    public async Task RateMediaContent(int id, decimal rating)
+    {
+      var mediaContent = await _unitOfWork.Repository<MediaContent, int>().Get(id).FirstOrDefaultAsync();
+      if (mediaContent == null)
+      {
+        _logger.LogError("Media content not found with ID: {id}", id);
+        throw new ValidationException("Media content not found");
+      }
+
+      mediaContent.Rating = rating;
+
+      await _unitOfWork.SaveChangesAsync();
     }
   }
 }

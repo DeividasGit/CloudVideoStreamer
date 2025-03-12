@@ -12,5 +12,6 @@ namespace CloudVideoStreamer.Service.Interfaces {
   public interface IMediaContentService : IBaseService<MediaContent, int>
   {
     Task<List<MediaContentDto>> GetFiltered(string sorting, PagingDto paging, MediaContentFilterDto model);
+    Task RateMediaContent(int id, decimal rating);
   }
 }
