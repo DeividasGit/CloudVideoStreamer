@@ -1,4 +1,5 @@
 ﻿using CloudVideoStreamer.Api.Controllers.Base;
+using CloudVideoStreamer.Repository.DTOs.Helpers;
 using CloudVideoStreamer.Repository.DTOs.MediaContent;
 using CloudVideoStreamer.Repository.DTOs.Movie;
 using CloudVideoStreamer.Repository.DTOs.Paging;
@@ -11,7 +12,7 @@ using System.ComponentModel.DataAnnotations;
 namespace CloudVideoStreamer.Api.Controllers {
   [ApiController]
   [Route("api/[controller]")]
-  //[Authorize]
+  [Authorize]
   public class MediaContentController : BaseController<MediaContent, int> 
   {
     private readonly IMediaContentService _mediaContentService;
@@ -21,8 +22,8 @@ namespace CloudVideoStreamer.Api.Controllers {
       _mediaContentService = mediaContentService;
     }
 
-    [HttpGet("GetFiltered")]
-    public async Task<ActionResult<List<MovieDto>>> GetFiltered([FromQuery] string sorting,
+    [HttpPost("GetFiltered")]
+    public async Task<ActionResult<List<MovieDto>>> GetFiltered([FromBody] List<SortingDto> sorting,
                                                                 [FromQuery] PagingDto paging, 
                                                                 [FromQuery] MediaContentFilterDto model)
     {

@@ -13,6 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
+using CloudVideoStreamer.Repository.DTOs.Helpers;
 
 namespace CloudVideoStreamer.Service.Services
 {
@@ -27,7 +28,7 @@ namespace CloudVideoStreamer.Service.Services
       _logger = logger;
     }
 
-    public async Task<List<MediaContentDto>> GetFiltered(string sorting, PagingDto paging, MediaContentFilterDto filter)
+    public async Task<List<MediaContentDto>> GetFiltered(List<SortingDto> sorting, PagingDto paging, MediaContentFilterDto filter)
     {
       try
       {
@@ -78,7 +79,7 @@ namespace CloudVideoStreamer.Service.Services
           query = query.Where(x =>
           x.Genres.Any(x => filter.Genres.Contains(x.Genre.Name)));
 
-        if(sorting != "")
+        if(sorting != null)
           query = query.Sort(sorting);
 
         if(paging != null)

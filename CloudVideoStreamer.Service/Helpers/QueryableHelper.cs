@@ -1,4 +1,6 @@
-﻿using CloudVideoStreamer.Repository.DTOs.Paging;
+﻿using CloudVideoStreamer.Repository.DTOs.Helpers;
+using CloudVideoStreamer.Repository.DTOs.Paging;
+using CloudVideoStreamer.Repository.Enums;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -12,18 +14,15 @@ namespace CloudVideoStreamer.Service.Helpers
 {
   public static class QueryableHelper
   {
-    public static IQueryable<T> Sort<T>(this IQueryable<T> query, string sortingColumns)
+    public static IQueryable<T> Sort<T>(this IQueryable<T> query, List<SortingDto> sorting)
     {
-      if (string.IsNullOrWhiteSpace(sortingColumns)) return query;
-
-      var sortingColumnsList = sortingColumns.Trim().Split(',').ToList();
+      if (sorting.Count == 0) return query;
 
       bool firstSort = true;
-      foreach (var column in sortingColumnsList)
+      foreach (var column in sorting)
       {
-        bool descending = column.StartsWith("-");
-
-        string columnName = descending ? column.Substring(1) : column;
+        bool descending = column.Order == SortingOrder.Descending ? true : false;
+        string columnName = column.ColumnName;
 
         var property = typeof(T).GetProperty(columnName, 
           BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
