@@ -22,7 +22,7 @@ namespace CloudVideoStreamer.Api.Controllers {
     }
 
     [HttpGet("GetFiltered")]
-    public async Task<ActionResult<List<MovieDto>>> GetFiltered([FromQuery] string sorting,
+    public async Task<ActionResult<List<MovieDto>>> GetFiltered([FromQuery] string? sorting,
                                                                 [FromQuery] PagingDto paging, 
                                                                 [FromQuery] MediaContentFilterDto model)
     {

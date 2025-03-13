@@ -27,7 +27,7 @@ namespace CloudVideoStreamer.Service.Services
       _logger = logger;
     }
 
-    public async Task<List<MediaContentDto>> GetFiltered(string sorting, PagingDto paging, MediaContentFilterDto filter)
+    public async Task<List<MediaContentDto>> GetFiltered(string? sorting, PagingDto paging, MediaContentFilterDto filter)
     {
       try
       {
@@ -78,7 +78,7 @@ namespace CloudVideoStreamer.Service.Services
           query = query.Where(x =>
           x.Genres.Any(x => filter.Genres.Contains(x.Genre.Name)));
 
-        if(sorting != "")
+        if(!string.IsNullOrEmpty(sorting))
           query = query.Sort(sorting);
 
         if(paging != null)
