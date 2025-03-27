@@ -12,7 +12,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CloudVideoStreamer.Api.Controllers
 {
-    [ApiController]
+  [ApiController]
   [Route("api/[controller]")]
   public class AuthController : Controller
   {

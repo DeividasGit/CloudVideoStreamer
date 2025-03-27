@@ -9,7 +9,7 @@ namespace CloudVideoStreamer.Api.Controllers
 {
   [ApiController]
   [Route("api/[controller]")]
-  //[Authorize(Roles = "Admin")]
+  [Authorize(Roles = "Admin")]
   public class RoleController : BaseController<Role, int>
   {
     private readonly IRoleService _roleService;
