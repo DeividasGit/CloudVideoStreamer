@@ -6,16 +6,19 @@ using CloudVideoStreamer.Service.Interfaces;
 using CloudVideoStreamer.Service.Interfaces.Base;
 using CloudVideoStreamer.Service.Services.Base;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace CloudVideoStreamer.Service.Services;
 
 public class MovieService : BaseService<Movie, int>, IMovieService
 {
   private readonly IUnitOfWork _unitOfWork;
+  private readonly ILogger<MovieService> _logger;
 
-  public MovieService(IUnitOfWork unitOfWork) : base(unitOfWork)
+  public MovieService(IUnitOfWork unitOfWork, ILogger<MovieService> logger) : base(unitOfWork)
   {
     _unitOfWork = unitOfWork;
+    _logger = logger;
   }
 
   public async Task<List<MovieDto>> GetAll()
@@ -44,7 +47,8 @@ public class MovieService : BaseService<Movie, int>, IMovieService
   {
     var mediaContent = _unitOfWork.Repository<MediaContent, int>().Get(model.MediaContentId).FirstOrDefault();
     if (mediaContent == null) 
-    { 
+    {
+      _logger.LogError("Media Content not found");
       throw new KeyNotFoundException("Media Content not found");
     }
 
@@ -63,6 +67,7 @@ public class MovieService : BaseService<Movie, int>, IMovieService
     var mediaContent = _unitOfWork.Repository<MediaContent, int>().Get(model.MediaContentId).FirstOrDefault();
     if (mediaContent == null) 
     {
+      _logger.LogError("Media Content not found");
       throw new KeyNotFoundException("Media Content not found");
     }
 
