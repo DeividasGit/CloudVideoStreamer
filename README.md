@@ -4,7 +4,9 @@ A project for learning purposes.
 
 Backend: .NET Core WEB API
 
-Frontend: React
+WEB Frontend: React
+
+Mobile App Frontend: React Native CLI
 
 Database: MS SQL
 
