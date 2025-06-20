@@ -8,9 +8,11 @@ function App() {
   const [count, incrementCount] = useReducer((count) => count + 1, 0);
 
   return (
-    <button onClick={incrementCount}>
-      { count }
-    </button>
+    <div className="container">
+      <button className="btn" onClick={incrementCount}>
+        { count }
+      </button>
+    </div>
   );
 }
 
