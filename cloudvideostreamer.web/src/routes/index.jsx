@@ -1,23 +1,45 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Home from '../pages/Home';
-import About from '../pages/About';
-import Layout from '../layouts/Layout';
-import NotFound from '../pages/NotFound';
+import About from '../pages/About/Index';
+import Layout from '../components/layout/layouts/Layout';
+import NotFound from '../pages/Error/NotFound';
+import Login from '../pages/public/Login/Index';
+import PrivateRoute from '../pages/PrivateRoute';
 
 const routes = [
     {
         path: '/',
-        element: <Layout/>,
-        errorElement: <NotFound/>,
+        element: (
+            <PrivateRoute>
+                <Layout />
+            </PrivateRoute>
+        ),
+        errorElement: (
+            <PrivateRoute>
+                <NotFound/>
+            </PrivateRoute>
+        ),
         children: [
             {
-                path: '/',
-                element: <Home/>
+                index: true,
+                element: (
+                    <PrivateRoute>
+                        <Home/>
+                    </PrivateRoute>
+                )
             },
             {
                 path: '/about',
-                element: <About/>
+                element: (
+                    <PrivateRoute>
+                        <About/>
+                    </PrivateRoute>
+                )
             }]
+    },
+    {
+        path: '/login',
+        element: <Login/>
     }]
 
 export const router = createBrowserRouter(routes);

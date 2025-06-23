@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+.btn-submit {
+    @apply mt-4 w-full bg-white hover:bg-neutral-300 text-black font-semibold py-2 px-4 rounded-md flex items-center justify-center transition-colors
+}
+
+.btn-submit-loading {
+    @apply mt-4 bg-white hover:bg-neutral-300 text-black font-semibold py-2 px-4 flex items-center justify-center transition-colors
+    w-5 h-5 border-2 border-t-transparent border-black rounded-full animate-spin
+}
