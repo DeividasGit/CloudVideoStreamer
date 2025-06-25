@@ -4,7 +4,7 @@ import { Navigate } from "react-router-dom";
 export default function PrivateRoute({ children }) {
   //const location = useLocation();
 
-  const user = localStorage.getItem("token");
+  const user = localStorage.getItem("accessToken");
 
   if (!user) {
     // TODO: save current location

@@ -150,9 +150,83 @@ namespace CloudVideoStreamer.Api.Controllers
       }
     }
 
+    [HttpPost("Refresh")]
+    public async Task<ActionResult<UserLoginResponseDto>> RefreshToken()
+    {
+      var id = 5; // TODO: This should be replaced with actual user ID retrieval logic, e.g., from claims
+
+      try 
+      {
+        var refreshToken = Request.Cookies["refresh_token"];
+        if (string.IsNullOrEmpty(refreshToken)) {
+          _logger.LogWarning("Refresh token not found for user ID: {UserId}", id);
+          return Unauthorized("Refresh token not found");
+        }
+
+        var response = await _authService
+             .RefreshTokenUser(id, refreshToken,
+             _jwtSettings.Value.AccessTokenExpiration,
+             _jwtSettings.Value.RefreshTokenExpiration,
+             _jwtSettings.Value.RefreshTokenInactivity);
+        if (response == null)
+          return BadRequest("Failed to log in");
+
+        SetRefreshTokenCookie(response.RefreshToken);
+
+        return Ok(new UserLoginResponseDto() {
+          Id = response.Id,
+          Name = response.Name,
+          Token = response.AccessToken
+        });
+      } 
+      catch (ValidationException ex) 
+      {
+        return Unauthorized(ex.Message);
+      } 
+      catch (SecurityTokenException ex) 
+      {
+        return BadRequest(ex.Message);
+      }
+      catch (Exception ex) 
+      {
+        _logger.LogError(ex, "An error occurred while refreshing token for user ID: {UserId}", id);
+        return StatusCode(500, "Internal server error");
+      }
+    }
+
     [HttpPost("Logout/{id}")]
     public async Task<ActionResult> Logout(int id) 
     {
+      try 
+      {
+        var refreshToken = Request.Cookies["refresh_token"];
+        if (refreshToken == string.Empty) 
+        {
+          _logger.LogWarning("Refresh token not found for user ID: {Id}", id);
+          return Unauthorized("Refresh token not found");
+        }
+
+        await _authService.LogoutUser(id, refreshToken, 
+                                      _jwtSettings.Value.RefreshTokenInactivity);
+
+        return Ok();
+      } 
+      catch (ValidationException ex) 
+      {
+        return Unauthorized(ex.Message);
+      } 
+      catch (Exception ex) 
+      {
+        _logger.LogError(ex, "An error occurred while loging out user ID: {UserId}", id);
+        return StatusCode(500, "Internal server error");
+      }
+    }
+
+    [HttpPost("Logout")]
+    public async Task<ActionResult> Logout() 
+    {
+      var id = 5; // TODO: This should be replaced with actual user ID retrieval logic, e.g., from claims
+
       try 
       {
         var refreshToken = Request.Cookies["refresh_token"];
@@ -182,7 +256,7 @@ namespace CloudVideoStreamer.Api.Controllers
       Response.Cookies.Append("refresh_token", refreshToken, new CookieOptions() {
         Secure = true,
         HttpOnly = true,
-        SameSite = SameSiteMode.Strict,
+        SameSite = SameSiteMode.None,
         Expires = DateTimeOffset.UtcNow.Add(_jwtSettings.Value.RefreshTokenExpiration)
       });
     }
