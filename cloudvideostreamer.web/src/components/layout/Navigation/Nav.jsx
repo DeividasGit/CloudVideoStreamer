@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import './Nav.css';
 import { useState } from "react";
-import { SlArrowLeft, SlHome  } from "react-icons/sl";
+import { SlHome  } from "react-icons/sl";
 import { CiCircleInfo } from "react-icons/ci";
 import { Menu } from "lucide-react";
 

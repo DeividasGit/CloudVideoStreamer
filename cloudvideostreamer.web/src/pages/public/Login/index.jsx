@@ -1,13 +1,15 @@
 import { useState, useCallback, useEffect } from "react"
 import LoginForm from "./form"
-import { login } from "../../../services/auth/authService"
+import { authService } from "../../../services/auth/authService";
 import { useNavigate } from "react-router-dom";
+import './login.css';
 
 export default function Login () {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
     
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -15,9 +17,8 @@ export default function Login () {
         setLoading(true);
 
         try {
-            const data = await login(email, password);
-            localStorage.setItem("token", data.token);
-            navigate("/home");
+            const data = await authService.login(email, password);
+            navigate("/");
         } catch (err) {
             setError(err.message);
         } finally {
@@ -26,7 +27,7 @@ export default function Login () {
     };
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-neutral-900 p-4">
+        <div className="login">
             <LoginForm handleLogin={handleLogin} setEmail={setEmail} setPassword={setPassword} loading={loading}/>
         </div>
     )
