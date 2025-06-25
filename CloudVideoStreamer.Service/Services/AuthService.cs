@@ -82,7 +82,8 @@ namespace CloudVideoStreamer.Service.Services
       var newUser = new User() {
         Name = model.Name,
         Email = model.Email,
-        Password = passwordHasher.HashPassword(null, model.Password)
+        Password = passwordHasher.HashPassword(null, model.Password),
+        RoleId = 1, //TODO: fix
       };
 
       await _userService.Add(newUser);

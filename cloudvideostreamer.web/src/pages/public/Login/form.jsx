@@ -24,7 +24,7 @@ export default function LoginForm({ handleLogin, setEmail, setPassword, loading 
                     className="btn-submit"
                     >
                     {loading ? (
-                        <div className="btn-submit-loading"></div>
+                        <Loader2  className="btn-submit-loading"></Loader2 >
                     ) : (
                         "Login"
                     )}
