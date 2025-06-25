@@ -171,7 +171,7 @@ namespace CloudVideoStreamer.Service.Services
         Id = user.Id,
         Name = user.Name,
         AccessToken = newtoken,
-        RefreshToken = refreshToken
+        RefreshToken = newRefreshToken
       };
     }
 

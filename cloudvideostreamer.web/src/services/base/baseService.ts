@@ -1,4 +1,5 @@
 import { environment } from "../../environments/env";
+import axiosInstance from "../axiosInstance";
 
 // src/services/BaseService.ts
 export default class BaseService<T> {
@@ -9,39 +10,27 @@ export default class BaseService<T> {
   }
 
   async getAll(): Promise<T[]> {
-    const response = await fetch(this.baseUrl);
-    if (!response.ok) throw new Error(`Error fetching all: ${response.statusText}`);
-    return response.json();
+    const response = await axiosInstance.get(this.baseUrl);
+    return response.data;
   }
 
   async getById(id: number | string): Promise<T> {
-    const response = await fetch(`${this.baseUrl}${id}`);
-    if (!response.ok) throw new Error(`Error fetching by id: ${response.statusText}`);
-    return response.json();
+    const response = await axiosInstance.get(`${this.baseUrl}/${id}`);
+    return response.data;
   }
 
   async create(model: T): Promise<T> {
-    const response = await fetch(this.baseUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(model),
-    });
-    if (!response.ok) throw new Error(`Error creating: ${response.statusText}`);
-    return response.json();
+    const response = await axiosInstance.post(this.baseUrl, model);
+    return response.data;
   }
 
   async update(id: number | string, model: Partial<T>): Promise<T> {
-    const response = await fetch(`${this.baseUrl}${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(model),
-    });
-    if (!response.ok) throw new Error(`Error updating: ${response.statusText}`);
-    return response.json();
+    const response = await axiosInstance.put(`${this.baseUrl}/${id}`, model);
+    return response.data;
   }
 
   async delete(id: number | string): Promise<void> {
-    const response = await fetch(`${this.baseUrl}${id}`, { method: "DELETE" });
-    if (!response.ok) throw new Error(`Error deleting: ${response.statusText}`);
+    const response = await axiosInstance.delete(`${this.baseUrl}${id}`);
+    //return response.data;
   }
 }
