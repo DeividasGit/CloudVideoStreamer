@@ -1,10 +1,10 @@
 // src/services/authService.ts
 import BaseService from "../base/baseService";
-import { User } from "../../models/User"
+import User from "../../models/User"
 import { UserLoginResponseDto } from "../../models/dto/UserLoginResponseDto";
 import axiosInstance from "../axiosInstance";
 
-class AuthService extends BaseService<User> {
+class AuthService extends BaseService<User> {  
   constructor() {
     super("auth"); // Base path to auth endpoint
   }
