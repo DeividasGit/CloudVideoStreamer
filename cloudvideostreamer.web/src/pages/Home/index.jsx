@@ -1,25 +1,8 @@
-import { useState, useEffect } from "react";
-import { mediaContentService } from "../../services/media/mediaContentService";
 import MediaContent from "../../models/MediaContent";
+import useMediaContent from "../../hooks/useMediaContent";
 
 export default function Home() {
-  const [ mediaContent, setMediaContent ] = useState([]);
-  const [ loading, setLoading ] = useState(true);
-
-  useEffect(() => {
-    const fetchMediaContent = async () => {
-      try {
-        setLoading(true);
-        const response = await mediaContentService.getAll();
-        setMediaContent(response);
-      } catch (error) {
-        console.error("Error fetching media content:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchMediaContent();
-  }, [])
+  const { mediaContent, loading, refresh } = useMediaContent();
 
   if (loading) return <div>Loading media...</div>;
 
