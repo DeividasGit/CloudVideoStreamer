@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from "react"
 import LoginForm from "./form"
 import { authService } from "../../../services/auth/authService";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../../hooks/useAuth";
 import './login.css';
 
 export default function Login () {
@@ -10,6 +11,7 @@ export default function Login () {
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const {user, login, logout} = useAuth();
     
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -18,6 +20,7 @@ export default function Login () {
 
         try {
             const data = await authService.login(email, password);
+            login(data);
             navigate("/");
         } catch (err) {
             setError(err.message);
