@@ -19,8 +19,7 @@ class AuthService extends BaseService<User> {
   }
 
   async logout(id: number) {
-    await axiosInstance.post(`auth/logout/${id}`);
-    
+    await axiosInstance.post(`auth/logout/${id}`);    
     localStorage.removeItem("accessToken");
   }
 

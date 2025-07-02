@@ -13,5 +13,6 @@ namespace CloudVideoStreamer.Service.Interfaces
   {
     Task<User> Get(UserRegisterDto model);
     Task<User> Get(UserLoginDto model);
+    Task<User> GetWithRole(int id);
   }
 }

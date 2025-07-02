@@ -34,7 +34,19 @@ namespace CloudVideoStreamer.Service.Services
     {
       var user = await _unitOfWork.Repository<User, int>()
         .GetAllTrackable()
+        .Include(x => x.Role)
         .Where(x => x.Email == model.Email)
+        .FirstOrDefaultAsync();
+
+      return user;
+    }
+
+    public async Task<User> GetWithRole(int id)
+    {
+      var user = await _unitOfWork.Repository<User, int>()
+        .GetAllTrackable()
+        .Include(x => x.Role)
+        .Where(x => x.Id == id)
         .FirstOrDefaultAsync();
 
       return user;

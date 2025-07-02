@@ -27,14 +27,16 @@ namespace CloudVideoStreamer.Service.Services
     private readonly IUnitOfWork _unitOfWork;
     private readonly IUserService _userService;
     private readonly ILogger<AuthService> _logger;
+    private readonly IRoleService _roleService;
 
     public AuthService(IConfiguration configuration, IUnitOfWork unitOfWork, IUserService userService, 
-      ILogger<AuthService> logger)
+      ILogger<AuthService> logger, IRoleService roleService)
     {
       _configuration = configuration;
       _unitOfWork = unitOfWork;
       _userService = userService;
       _logger = logger;
+      _roleService = roleService;
     }
 
     public string GenerateAccessToken(User user, TimeSpan expiration)
@@ -50,8 +52,10 @@ namespace CloudVideoStreamer.Service.Services
         Subject = new ClaimsIdentity(
           new Claim[]
           {
-            new Claim(ClaimTypes.Name, user.Name),
-            new Claim(ClaimTypes.Email, user.Email)
+            new Claim("userid", user.Id.ToString()),
+            new Claim("name", user.Name),
+            new Claim(ClaimTypes.Email, user.Email),
+            new Claim(ClaimTypes.Role, user.Role.Name)
           }),
         Expires = DateTime.UtcNow.Add(expiration),
         SigningCredentials = new SigningCredentials(
@@ -79,11 +83,14 @@ namespace CloudVideoStreamer.Service.Services
 
       var passwordHasher = new PasswordHasher<User>();
 
+      var role = _roleService.Get("Admin").Result;
+
       var newUser = new User() {
         Name = model.Name,
         Email = model.Email,
         Password = passwordHasher.HashPassword(null, model.Password),
-        RoleId = 1, //TODO: fix
+        RoleId = role.Id, //TODO: fix
+        Role = role
       };
 
       await _userService.Add(newUser);
@@ -144,7 +151,7 @@ namespace CloudVideoStreamer.Service.Services
                                                             TimeSpan refreshTokenExpiration,
                                                             TimeSpan refreshTokenInactivity) 
     {
-      var user = await _userService.Get(userId);
+      var user = await _userService.GetWithRole(userId);
       if (user == null) 
       {
         _logger.LogWarning("Invalid credentials for user ID: {Id}", userId);

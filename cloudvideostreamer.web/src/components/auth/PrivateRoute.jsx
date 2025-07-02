@@ -7,13 +7,9 @@ export default function PrivateRoute({ children }) {
   const {user, login, logout, loading} = useAuth();
   const location = useLocation();
 
-  console.log("user", user)
-
-  //const user = localStorage.getItem("accessToken");
-
-  // if (loading) {
-  //   return <div>Loading...</div>;
-  // }
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   if (!user) {
     // TODO: save current location
