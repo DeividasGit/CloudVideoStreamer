@@ -4,7 +4,8 @@ import About from '../pages/About/Index';
 import Layout from '../components/layout/layouts/Layout';
 import NotFound from '../pages/Error/NotFound';
 import Login from '../pages/public/Login/Index';
-import PrivateRoute from '../pages/PrivateRoute';
+import PrivateRoute from '../components/auth/PrivateRoute';
+import Register from '../pages/public/Register';
 
 const routes = [
     {
@@ -40,6 +41,10 @@ const routes = [
     {
         path: '/login',
         element: <Login/>
+    },
+    {
+       path: '/register',
+       element: <Register/> 
     }]
 
 export const router = createBrowserRouter(routes);
