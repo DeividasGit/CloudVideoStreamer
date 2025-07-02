@@ -2,7 +2,7 @@
 import BaseService from "../base/baseService";
 import User from "../../models/User"
 import { UserLoginResponseDto } from "../../models/dto/UserLoginResponseDto";
-import axiosInstance from "../axiosInstance";
+import axiosInstance from "../base/axiosInstance";
 
 class AuthService extends BaseService<User> {  
   constructor() {
@@ -30,6 +30,14 @@ class AuthService extends BaseService<User> {
     return response.data;
   }
 
+  async register(name: string, email: string, password: string, confirmPassword: string) {
+    const response = await axiosInstance.post<UserLoginResponseDto>("auth/register", {name, email, password, confirmPassword});
+
+    const userLoginDto = response.data;
+    localStorage.setItem("accessToken", userLoginDto.token);
+
+    return userLoginDto;
+  }
 }
 
 export const authService = new AuthService();

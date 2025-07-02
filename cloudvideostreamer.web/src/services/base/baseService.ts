@@ -1,5 +1,5 @@
 import { environment } from "../../environments/env";
-import axiosInstance from "../axiosInstance";
+import axiosInstance from "./axiosInstance";
 
 // src/services/BaseService.ts
 export default class BaseService<T> {

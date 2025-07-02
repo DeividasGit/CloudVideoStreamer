@@ -1,8 +1,8 @@
 // src/services/axiosInstance.ts
 import axios, { AxiosError } from "axios";
 import toast from "react-hot-toast";
-import { environment } from "../environments/env";
-import { UserLoginResponseDto } from "../models/dto/UserLoginResponseDto";
+import { environment } from "../../environments/env";
+import { UserLoginResponseDto } from "../../models/dto/UserLoginResponseDto";
 
 const API_URL = environment.apiUrl;
 
@@ -57,10 +57,13 @@ axiosInstance.interceptors.response.use(
     if (error.code === "ECONNABORTED") {
       toast.error("Request timed out. Check your connection.");
     } else if (error.response) {
-      toast.error(
-        (error.response.data as any)?.message ||
-        `Error ${error.response.status}: ${error.response.statusText}`
-      );
+      const errors = error.response.data?.errors;
+      if (errors && typeof errors === 'object') {
+        const messages = Object.values(errors).flat(); //turns into one-level array
+        messages.forEach((msg: string) => toast.error(msg));
+      } else {
+        toast.error(`Error ${error.response.status}: ${error.response.statusText}`);
+      }
     } else {
       toast.error(error.message || "An unknown error occurred");
     }
