@@ -20,14 +20,15 @@ export default function AuthProvider({ children }) {
       const payload = getPayloadFromToken(token);
       if (payload) {
         // Map payload claims to user object as needed
-        setUser({
-          id: payload.userid || null, // or payload.nameid or payload.sub depending on your token
-          name: payload.name || null,
-          email: payload.email || null,
-          roleName: payload.role || null,
-          // add other claims as needed
-          token,
-        });
+        const user = {
+          id: Number(payload.userid || payload.nameid || payload.sub || 0), // fallback if claim name differs
+          name: payload.name || "",
+          email: payload.email || "",
+          roleName: payload.role || "",
+          token: token,
+        };
+
+        setUser(user);
       }
     }
     setLoading(false);

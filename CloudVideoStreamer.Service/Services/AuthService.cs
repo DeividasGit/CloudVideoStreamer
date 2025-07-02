@@ -113,7 +113,8 @@ namespace CloudVideoStreamer.Service.Services
         Id = newUser.Id,
         Name = newUser.Name,
         AccessToken = token,
-        RefreshToken = refreshToken
+        RefreshToken = refreshToken,
+        Email = newUser.Email,
       };
     }
 
@@ -142,7 +143,8 @@ namespace CloudVideoStreamer.Service.Services
         Id = user.Id,
         Name = user.Name,
         AccessToken = token,
-        RefreshToken = refreshToken
+        RefreshToken = refreshToken,
+        Email = user.Email,
       };
     }
 
@@ -178,7 +180,8 @@ namespace CloudVideoStreamer.Service.Services
         Id = user.Id,
         Name = user.Name,
         AccessToken = newtoken,
-        RefreshToken = newRefreshToken
+        RefreshToken = newRefreshToken,
+        Email = user.Email,
       };
     }
 

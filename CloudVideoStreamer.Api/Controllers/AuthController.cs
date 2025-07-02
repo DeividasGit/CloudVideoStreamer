@@ -48,8 +48,9 @@ namespace CloudVideoStreamer.Api.Controllers
 
         return Ok(new UserLoginResponseDto() {
           Id = response.Id,
-          Name = response.Name,
-          Token = response.AccessToken
+          Name = model.Name,
+          Token = response.AccessToken,
+          Email = response.Email
         });       
       } 
       catch (ValidationException ex) 
@@ -90,7 +91,8 @@ namespace CloudVideoStreamer.Api.Controllers
         return Ok(new UserLoginResponseDto() {
           Id = response.Id,
           Name = response.Name,
-          Token = response.AccessToken
+          Token = response.AccessToken,
+          Email = response.Email
         });
       } 
       catch (ValidationException ex) 
@@ -132,7 +134,8 @@ namespace CloudVideoStreamer.Api.Controllers
         return Ok(new UserLoginResponseDto() {
           Id = response.Id,
           Name = response.Name,
-          Token = response.AccessToken
+          Token = response.AccessToken,
+          Email = response.Email
         });
       } 
       catch (ValidationException ex) 
@@ -176,7 +179,8 @@ namespace CloudVideoStreamer.Api.Controllers
         return Ok(new UserLoginResponseDto() {
           Id = response.Id,
           Name = response.Name,
-          Token = response.AccessToken
+          Token = response.AccessToken,
+          Email = response.Email
         });
       } 
       catch (ValidationException ex) 
