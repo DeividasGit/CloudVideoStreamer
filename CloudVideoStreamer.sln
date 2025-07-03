@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudVideoStreamer.Service"
 EndProject
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "cloudvideostreamer.web", "CloudVideoStreamer.Web\cloudvideostreamer.web.esproj", "{2132077C-247E-E828-7041-765C1AF673F3}"
 EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "cloudvideostreamer.mobile", "cloudvideostreamer.mobile\cloudvideostreamer.mobile.esproj", "{76323452-AEB8-B9EC-B570-59EB490E282E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,12 @@ Global
 		{2132077C-247E-E828-7041-765C1AF673F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2132077C-247E-E828-7041-765C1AF673F3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2132077C-247E-E828-7041-765C1AF673F3}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{76323452-AEB8-B9EC-B570-59EB490E282E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76323452-AEB8-B9EC-B570-59EB490E282E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76323452-AEB8-B9EC-B570-59EB490E282E}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{76323452-AEB8-B9EC-B570-59EB490E282E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76323452-AEB8-B9EC-B570-59EB490E282E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76323452-AEB8-B9EC-B570-59EB490E282E}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
