@@ -1,5 +1,5 @@
-import MediaContent from "../../models/MediaContent";
 import useMediaContent from "../../hooks/useMediaContent";
+import MediaCard from "../../components/media/MediaCard";
 
 export default function Home() {
   const { mediaContent, loading, refresh } = useMediaContent();
@@ -7,13 +7,10 @@ export default function Home() {
   if (loading) return <div>Loading media...</div>;
 
   return (
-      <div className="flex-1 bg-white p-4 rounded shadow">
-    <h1 className="text-2xl mb-4">Home Page</h1>
-    <ul>
+    <div className="p-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
       {mediaContent.map((item) => (
-          <li key={item.id}>{item.title} - {item.description}</li>
-        ))}
-    </ul>
-  </div>
+        <MediaCard key={item.id} mediaContent={item}/>
+      ))}
+    </div>
   );
 }
