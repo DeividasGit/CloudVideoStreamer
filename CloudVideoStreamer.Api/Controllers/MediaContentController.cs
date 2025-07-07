@@ -12,7 +12,7 @@ using System.ComponentModel.DataAnnotations;
 namespace CloudVideoStreamer.Api.Controllers {
   [ApiController]
   [Route("api/[controller]")]
-  [Authorize]
+  //[Authorize]
   public class MediaContentController : BaseController<MediaContent, int> 
   {
     private readonly IMediaContentService _mediaContentService;
