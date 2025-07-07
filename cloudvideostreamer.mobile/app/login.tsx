@@ -1,18 +1,27 @@
+import PrimaryButton from "@/components/Buttons/PrimaryButton";
+import AuthScreenLayout from "@/components/Layout/AuthScreenLayout";
+import useAuth from "@/hooks/useAuth";
 import { useRouter } from "expo-router";
-import { Button, StyleSheet, Text, TextInput, View } from "react-native";
+import { StyleSheet, Text, TextInput } from "react-native";
 
 export default function Login() {
     const router = useRouter();
+    const authcontextType = useAuth(); 
+
+    const handleLogin = () => {
+        authcontextType?.login();
+        router.replace("/(screens)");
+    };
 
     return (
-        <View>
+        <AuthScreenLayout>
             <Text style={styles.text}>Email</Text>
             <TextInput style={styles.input}></TextInput>
             <Text style={styles.text}>Password</Text>
             <TextInput style={styles.input}></TextInput>
-            <Button title="Login" ></Button>
-            <Button title="Don't have an account?" onPress={() => router.navigate("/register")}></Button>
-        </View>
+            <PrimaryButton title="Login" onPress={handleLogin}/>
+            <PrimaryButton title="Don't have an account?" onPress={() => router.navigate("/register")}/>
+        </AuthScreenLayout>
     )
 }
 

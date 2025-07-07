@@ -1,18 +1,10 @@
-import { Stack } from "expo-router";
+import RootStack from "@/components/Layout/RootStack";
+import { AuthProvider } from "@/context/authContext";
 
-export default function RootLayout() {
-  const isLoggedIn = false;
-  
+export default function RootLayout() {  
   return (
-    <Stack>
-      <Stack.Protected guard={isLoggedIn}>
-        <Stack.Screen name="(screens)" />
-      </Stack.Protected>
-
-      <Stack.Protected guard={!isLoggedIn}>
-        <Stack.Screen name="login" />
-        <Stack.Screen name="register" />
-      </Stack.Protected>
-    </Stack>
+    <AuthProvider>
+      <RootStack/>
+    </AuthProvider>
   );
 }
