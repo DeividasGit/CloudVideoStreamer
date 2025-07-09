@@ -66,7 +66,7 @@ builder.Services.AddCors(options =>
   //policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()
     {
         policy
-            .WithOrigins("http://localhost:60301") // your React app origin
+            .WithOrigins("http://localhost:60301", "http://192.168.37.237:19006", "http://10.0.2.2:19006") // your React app origin
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials(); // <- IMPORTANT

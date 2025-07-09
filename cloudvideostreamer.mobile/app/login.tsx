@@ -6,7 +6,7 @@ import { StyleSheet, Text, TextInput } from "react-native";
 
 export default function Login() {
     const router = useRouter();
-    const authcontextType = useAuth(); 
+    const authcontextType = useAuth();
 
     const handleLogin = () => {
         authcontextType?.login();
