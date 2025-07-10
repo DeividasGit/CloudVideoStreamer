@@ -12,4 +12,4 @@ Database: MS SQL
 
 Login: Username and Password
 
-Authentication: JWT Token
+Authentication: JWT Token / OAuth
