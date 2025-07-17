@@ -1,8 +1,10 @@
 // src/services/axiosInstance.ts
 import axios, { AxiosError } from "axios";
-import { ToastAndroid } from "react-native";
-import { UserLoginResponseDto } from "@/models/dto/UserLoginResponseDto";
+import { UserLoginResponseDto } from "../../models/dto/UserLoginResponseDto";
 import { environment } from "../../environments/env";
+import { ToastAndroid } from "react-native";
+import { navigationRef } from "../../navigation/RootNavigation";
+
 const API_URL = environment.apiUrl;
 
 const axiosInstance = axios.create({
@@ -59,7 +61,7 @@ axiosInstance.interceptors.response.use(
       const errors = error.response.data?.errors;
       if (errors && typeof errors === 'object') {
         const messages = Object.values(errors).flat(); //turns into one-level array
-
+        
       if (Array.isArray(messages)) {
         messages.forEach((msg) => {
           if (typeof msg === 'string') {
@@ -67,6 +69,7 @@ axiosInstance.interceptors.response.use(
           }
         });
       }
+
       } else {
         ToastAndroid.show(`Error ${error.response.status}: ${error.response.statusText}`, ToastAndroid.SHORT);
       }
