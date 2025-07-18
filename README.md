@@ -6,7 +6,7 @@ Backend: .NET Core WEB API
 
 WEB Frontend: React
 
-Mobile App Frontend: React Native with Expo framework / React Native CLI
+Mobile App Frontend: React Native with Expo framework / React Native CLI ?
 
 Database: MS SQL
 
