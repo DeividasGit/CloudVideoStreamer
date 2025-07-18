@@ -1,4 +1,4 @@
-import Home from '@/app/screens/Home';
+import Home from '@/app/(screens)';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React from 'react';
 
