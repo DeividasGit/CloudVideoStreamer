@@ -1,14 +1,107 @@
 ## Review guidelines
 
-- Skipping layers is forbidden: Controllers → Services → Repositories → DbContext
+- Skipping layers is forbidden: Controllers → Services → Repositories → DbContext.
+- API layer MUST depend only on Service/Application abstractions.
+- Infrastructure MAY depend on EF Core and external libraries.
+- Domain layer (if present) MUST NOT depend on ASP.NET, EF Core, or UI frameworks.
+- Cross-layer dependencies MUST NOT be introduced.
+- Architectural boundaries MUST be preserved even for small changes.
+- Controllers MUST call Services only.
 - Controllers MUST NOT reference DbContext, EF Core entities, Repositories, UnitOfWork.
-- Repositories MUST Call Services only, Contain no business logic, Handle HTTP concerns only (status codes, validation responses).
-- Services MUST Contain business logic, Use repositories **only via IUnitOfWork**, Be transaction-aware where needed.
-- Services MUST NOT Expose EF entities, Reference DbContext directly.
-- Services SHOULD Be cohesive (single responsibility), Be unit-testable without EF Core.
-- Unit of Work - All data access MUST go through IUnitOfWork.
+- Controllers MUST NOT contain business logic.
+- Controllers MUST handle HTTP concerns only (status codes, validation responses).
+- Controllers MUST return DTOs, never EF entities.
+- Controllers SHOULD use ActionResult<TDto>.
+- Controllers SHOULD accept and propagate CancellationToken.
+- Controllers MUST NOT perform data queries or filtering logic.
+- Services MUST contain business logic.
+- Services MUST use repositories only via IUnitOfWork.
+- Services MUST be transaction-aware where needed.
+- Services MUST NOT expose EF entities.
+- Services MUST NOT reference DbContext directly.
+- Services SHOULD be cohesive (single responsibility).
+- Services SHOULD be unit-testable without EF Core.
+- Services MUST NOT grow into god services.
+- All data access MUST go through IUnitOfWork.
 - IUnitOfWork is the only allowed entry point to repositories.
 - DbContext lifetime MUST be scoped to UnitOfWork.
-- Repositories MUST Encapsulate EF queries.
-- Repositories MUST NOT Contain business logic, Call other repositories.
-- Repositories MAY Return IQueryable internally, but NEVER expose it upward.
+- SaveChanges or Commit MUST be controlled at Service level only.
+- Repositories MUST encapsulate EF queries.
+- Repositories MUST NOT contain business logic.
+- Repositories MUST NOT call other repositories.
+- Repositories MUST NOT return IQueryable outside repository boundary.
+- Repositories SHOULD use AsNoTracking for read-only queries.
+- Repositories SHOULD expose intent-driven methods (e.g., GetByNameAsync).
+- Repositories MUST avoid leaking EF-specific constructs upward.
+- DTOs MUST be used at API boundaries.
+- Mapping MUST NOT live in Controllers.
+- API contract changes MUST be intentional and documented.
+- Breaking changes MUST be explicitly justified.
+- Input MUST be validated.
+- Exceptions MUST NOT be swallowed.
+- API errors MUST use consistent error structure (e.g., ProblemDetails).
+- Authorization MUST be enforced via policies and/or service-layer checks.
+- Secrets MUST NOT be committed to the repository.
+- Logging MUST NOT include sensitive information.
+- Async MUST be end-to-end.
+- .Result and .Wait() are forbidden.
+- N+1 queries MUST be avoided.
+- Premature optimization MUST be avoided.
+- Clear naming MUST be preferred over clever abstractions.
+- New business logic MUST include unit tests.
+- Bug fixes MUST include regression tests.
+- Critical flows SHOULD include integration tests.
+- React components MUST NOT call APIs directly unless architecture explicitly allows it.
+- React components MUST NOT contain business logic.
+- React components MUST remain small and focused.
+- State logic MUST NOT be mixed into presentation unnecessarily.
+- API clients MUST be centralized.
+- Auth headers and token refresh MUST be centralized.
+- Server state MUST be handled consistently (e.g., React Query or chosen pattern).
+- Local UI state MUST be separated from server state.
+- Side effects MUST be isolated in hooks.
+- useEffect MUST NOT contain uncontrolled logic or missing dependencies.
+- Unnecessary re-renders MUST be avoided.
+- Inline heavy logic inside JSX MUST NOT be used.
+- Props MUST be clearly typed.
+- TypeScript strict mode SHOULD be enabled.
+- Usage of any MUST be justified and minimized.
+- Forms MUST handle validation explicitly.
+- Loading, error, and empty states MUST be handled explicitly.
+- Accessibility (labels, semantics) MUST NOT be ignored.
+- Dead code, commented blocks, and console logs MUST NOT remain in PRs.
+- React Native screens MUST follow Screens → hooks/state → services → API client structure.
+- React Native screens MUST NOT contain heavy business logic.
+- Network calls MUST be centralized.
+- Tokens MUST be stored securely (not plain AsyncStorage).
+- Permissions MUST be requested only when required.
+- Sensitive information MUST NOT be logged.
+- Long lists MUST use FlatList or SectionList.
+- Expensive work MUST NOT block the JS thread.
+- Navigation configuration MUST be centralized.
+- Inline anonymous heavy functions inside render MUST be avoided.
+- Platform-specific code MUST be isolated.
+- Offline and slow-network states SHOULD be handled gracefully.
+- Crash handling strategy SHOULD exist for production builds.
+- Code MUST be readable before being clever.
+- Naming MUST clearly express intent.
+- Magic numbers MUST NOT appear without explanation.
+- Methods MUST NOT exceed reasonable complexity.
+- Deep nesting MUST be avoided.
+- Large functions MUST be refactored.
+- Public APIs SHOULD be documented where unclear.
+- Repeated logic MUST be extracted.
+- Over-engineering MUST be flagged.
+- Under-engineering MUST be flagged.
+- Consistency across layers MUST be preserved.
+- Reviews MUST be strict.
+- Even small architectural or design violations MUST be flagged.
+- Minimal mistakes MUST be called out.
+- Violations MUST reference the exact broken rule.
+- Reviews MUST include concrete improvement suggestions.
+- Reviews SHOULD provide short coding tips to improve long-term skill.
+- Reviews MUST prioritize architecture, correctness, security, maintainability.
+- Reviews MUST NOT approve code that technically works but violates design.
+- Reviews MUST mentor toward senior-level thinking.
+- Reviews MUST challenge unnecessary complexity.
+- Reviews MUST encourage clarity, simplicity, and strong boundaries.
