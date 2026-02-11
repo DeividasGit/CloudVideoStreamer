@@ -1,4 +1,4 @@
-# REVIEW_RULES.md
+## Review guidelines
 
 ## Purpose
 These rules define non-negotiable architectural and coding standards.
