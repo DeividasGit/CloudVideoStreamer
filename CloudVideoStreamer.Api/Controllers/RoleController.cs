@@ -16,9 +16,10 @@ namespace CloudVideoStreamer.Api.Controllers
   {
     private readonly IRoleService _roleService;
     private readonly IUnitOfWork _unitOfWork;
-    public RoleController(IRoleService roleService) : base(roleService)
+    public RoleController(IRoleService roleService, IUnitOfWork unitOfWork) : base(roleService)
     {
       _roleService = roleService;
+      _unitOfWork = unitOfWork;
     }
 
     [HttpGet("{name:alpha}")]
