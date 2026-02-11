@@ -83,7 +83,7 @@ namespace CloudVideoStreamer.Service.Services
 
       var passwordHasher = new PasswordHasher<User>();
 
-      var role = _roleService.Get("Admin").Result; //TODO: fix
+      var role = await _roleService.Get("Admin"); //TODO: fix
 
       var newUser = new User() {
         Name = model.Name,
