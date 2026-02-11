@@ -15,20 +15,15 @@ namespace CloudVideoStreamer.Api.Controllers
   public class RoleController : BaseController<Role, int>
   {
     private readonly IRoleService _roleService;
-    private readonly IUnitOfWork _unitOfWork;
-    public RoleController(IRoleService roleService, IUnitOfWork unitOfWork) : base(roleService)
+    public RoleController(IRoleService roleService) : base(roleService)
     {
       _roleService = roleService;
-      _unitOfWork = unitOfWork;
     }
 
     [HttpGet("{name:alpha}")]
     public async Task<ActionResult<Role>> Get(string name)
     {
-      var role = await _unitOfWork.Repository<Role, int>()
-        .GetAllTrackable()
-        .Where(x => x.Name == name)
-        .FirstOrDefaultAsync();
+      var role = await _roleService.Get(name);
 
       if (role == null)
         return NotFound();
