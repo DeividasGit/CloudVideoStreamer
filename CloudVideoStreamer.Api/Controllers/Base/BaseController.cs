@@ -24,7 +24,7 @@ public class BaseController<T, TK> : Controller where T : class {
   [HttpGet("{id}")]
   public virtual async Task<ActionResult<List<T>>> Get(TK id)
   {
-    var result = _service.Get(id);
+    var result = await _service.Get(id);
 
     if (result == null) return NotFound();
 
