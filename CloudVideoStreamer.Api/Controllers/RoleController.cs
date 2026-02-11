@@ -1,9 +1,11 @@
 ﻿using CloudVideoStreamer.Api.Controllers.Base;
 using CloudVideoStreamer.Repository.Interfaces;
 using CloudVideoStreamer.Repository.Models;
+using CloudVideoStreamer.Repository.Repositories;
 using CloudVideoStreamer.Service.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace CloudVideoStreamer.Api.Controllers
 {
@@ -22,6 +24,7 @@ namespace CloudVideoStreamer.Api.Controllers
     public async Task<ActionResult<Role>> Get(string name)
     {
       var role = await _roleService.Get(name);
+
       if (role == null)
         return NotFound();
 
