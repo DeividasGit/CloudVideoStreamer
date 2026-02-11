@@ -1,6 +1,7 @@
 ﻿using CloudVideoStreamer.Api.Controllers.Base;
 using CloudVideoStreamer.Repository.Interfaces;
 using CloudVideoStreamer.Repository.Models;
+using CloudVideoStreamer.Repository.Repositories;
 using CloudVideoStreamer.Service.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

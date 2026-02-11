@@ -116,7 +116,7 @@ namespace CloudVideoStreamer.Api.Controllers
       try 
       {    
         var refreshToken = Request.Cookies["refresh_token"];
-        if (refreshToken == string.Empty) {
+        if (string.IsNullOrEmpty(refreshToken)) {
           _logger.LogWarning("Refresh token not found for user ID: {UserId}", id);
           return Unauthorized("Refresh token not found");
         }
@@ -204,7 +204,7 @@ namespace CloudVideoStreamer.Api.Controllers
       try 
       {
         var refreshToken = Request.Cookies["refresh_token"];
-        if (refreshToken == string.Empty) 
+        if (string.IsNullOrEmpty(refreshToken)) 
         {
           _logger.LogWarning("Refresh token not found for user ID: {Id}", id);
           return Unauthorized("Refresh token not found");
@@ -233,8 +233,8 @@ namespace CloudVideoStreamer.Api.Controllers
 
       try 
       {
-        var refreshToken = Request.Cookies["refresh_token"];
-        if (refreshToken == string.Empty) 
+        var refreshToken = Request.Cookies["refresh_token"];    
+        if (string.IsNullOrEmpty(refreshToken))
         {
           _logger.LogWarning("Refresh token not found for user ID: {Id}", id);
           return Unauthorized("Refresh token not found");
